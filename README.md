@@ -1,2 +1,2 @@
-# Kokonoe-PC
+# Kokonoe PC
 Maquina virtual Kokonoe PC
