@@ -4,3 +4,11 @@ O projeto Kokonoe PC consiste no desenvolvimento de um emulador completo de um c
 ## Especificações
 Kokonoe PC possui um processador de arquitetura 16 BIts MIPS Reduzida sem Floating-Point Unit, com um chip de 64KB de RAM, um de 64KB de ROM para armazenar o programa, e um Display de 128 × 128 pixels com chip de VRAM de 32KB. Cada chip possui endereçamento independente e terá instruções para ler e escrever em cada chip. O Instructions Set, mapeamento de memória e ISA estará disponível junto a documentação.
 
+## Processador
+A arquitetura do processador esta especificada em [arquitetura.md](./arquitetura.md)
+
+## instruções
+As instruções estão especificadas em [instructions.md](./instructions.md)
+
+## Chips de Memoria
+Os chips de memoria estão documentados em [memoria.md](./memoria.md)
