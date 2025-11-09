@@ -9,6 +9,3 @@ A arquitetura do processador esta especificada em [arquitetura.md](./arquitetura
 
 ## instruções
 As instruções estão especificadas em [instructions.md](./instructions.md)
-
-## Chips de Memoria
-Os chips de memoria estão documentados em [memoria.md](./memoria.md)

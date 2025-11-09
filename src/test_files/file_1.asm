@@ -1,20 +1,45 @@
-jump main
+.text
+    j main
 
-subtrair:                       ; Procedimento para subtrair a1 e a2
-    sub         $v1 $a1 $a2     ; Subtraindo a1 e a2 e armazenando em v1
-    jr                          ; retornando para _main
+    fatorial:
+        pop     $t0
+        move    $rt $t0
+        li      $t1 1      
 
-printar:
-    ssc         1               ; seta syscall para 1 (printInt)
-    syscall                     ; chama a syscall para printar na tela o valor de $a1
-    jr                          ; retornando para _main
+_loop_1:
+        bgt     $t0 $t1 exit	    # if x > 1 then goto target
+            mult    $rt $rt $t0     #   rt *= x 
+            subi    $t0 $t0 1       #   $t0 = $t0 -1
+            j       _loop_1
+_exit:
+        return
+            
 
-main:
-    li          $a1 100         ; salvando 100 em a1
-    li          $a2 20          ; salvando 20 am a2
-    jal         subtrair        ; pulanod para subtrair
-    move        $a1 $v1         ; movendo o resultado de subtrair para a1
-    jal         printar         ; indo para printar
-    
+    print:
+        pop $t0
+        li $sc 1 # Syscall para pritnar numero
+        syscall
+        return
 
+    main:
+        li $t0 5
+        push $t0
+        
+        jal fatorial  # Fatorial de 5
+        push $rt
+
+        jal print
+        
+        # exit
+        li $sc 0
+        syscall 
+
+        
+.data
+    nome:  .string "Marceline"
+    hello: .string "Hello World"
+    nomes: .string "Reimu Hakurei" "Marisa Kirisame" "Alice"
+
+    idade: .int8   23
+    notas: .int16  123 123 123
     

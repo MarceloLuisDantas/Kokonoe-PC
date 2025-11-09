@@ -1,4 +1,4 @@
-from assembler import load_program
+from assembler/assembler import load_program
 
 import std/os
 

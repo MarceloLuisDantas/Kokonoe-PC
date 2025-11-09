@@ -1,29 +1,32 @@
 # Instruções Aritmeticas
-## add (Addition) `add $r1 $r2 $r3` => `r1 = r2 + r3`
+## add - (Addition) `add $r1 $r2 $r3` => `r1 = r2 + r3`
 Soma os valores de r2 e r3, e salva o resultado em r1
 
-## addi (Addition Immediate) `addi $r1 $r2 x` => `r1 = r2 + x`
+## addi - (Addition Immediate) `addi $r1 $r2 x` => `r1 = r2 + x`
 Soma os valores de r2 e x, e salva o resultado em r1
 
-## sub (Subtraction) `sub $r1 $r2 $r3` => `r1 = r2 - r3`
+## sub - (Subtraction) `sub $r1 $r2 $r3` => `r1 = r2 - r3`
 Subtrai r3 de r2, e salva o resultado em r1
 
-## subi (Subtraction Immediate) `subi $r1 $r2 x` => `r1 = r2 - x`
+## subi - (Subtraction Immediate) `subi $r1 $r2 x` => `r1 = r2 - x`
 Subtrai  de r2, e salva o resultado em r1
 
-## mult (Multplication) `mult $r1 $r2 $r3` => `r1 = r2 * r3`
+## mult - (Multplication) `mult $r1 $r2 $r3` => `r1 = r2 * r3`
 Multiplica r2 por r3 e salva o resultado em r1
 
-## multi (Multplication Immediate) `multi $r1 $r2 x` => `r1 = r2 * x`
+## multi - (Multplication Immediate) `multi $r1 $r2 x` => `r1 = r2 * x`
 Multiplica r2 por x e salva o resultado em r1
 
-## div (Division) `div $r1 $r2 $r3` => `r1 = r2 / r3`
+## div - (Division) `div $r1 $r2 $r3` => `r1 = r2 / r3`
 Divide r2 por r3 e salva o resultado em r1
 
-## divi (Division Immediate) `div $r1 $r2 x` => `r1 = r2 / x`
+## divi - (Division Immediate) `div $r1 $r2 x` => `r1 = r2 / x`
 Divide r2 por x e salva o resultado em r1
 
-## move (Move) `move $r1 $r2` => `r1 = r2`
+## move - (Move) `move $r1 $r2` => `r1 = r2`
+Copia o valor de r2 para r1
+
+## li - (Load Immediate) `li $r1 x` => `r1 = x`
 Copia o valor de r2 para r1
 
 # Instruções Logicas
@@ -52,7 +55,7 @@ Verifica se r2 é menor que r3, e salva o resultado em r1
 Verifica se r2 é menor que x, e salva o resultado em r1
 
 # Instruções de Branch
-## j- (Jump To) `j address` => `goto address`
+## j - (Jump To) `j address` => `goto address`
 Seta o PC para o endereço especificado
 
 ## jr - (Jump Register) `jr $r1` => `goto r1`
@@ -78,24 +81,37 @@ Pula para o endereço especificado caso r1 for menor que r2, caso contrario, seg
 
 ## ble - (Branch on Less Than or Equal) `ble $r1 $r2 address` => `if(r1 <= r2) goto address`
 Pula para o endereço especificado caso r1 for menor ou igual a r2, caso contrario, segue para a proxima instrução
+
+## ret - (Return) `ret` => `pc = ra`
+Seta o PC para o endereço salvo em $ra salvo por `jal`
  
 # Instruções de Data Transfer
-## lw - (Load World) `lw $r1 address` => `r1 = *address`
+## push - (Push to Stack) `push $r1` => `stack.push(r1)`
+Salva o valor de r1 na stack
+
+## pop - (Push to Stack) `pop $r1` => `r1 = stack.pop()`
+Remove o primeiro valor da stack e salva em r1
+
+## lw - (Load World) `lw $r1 [offset][address/register]` => `r1 = *address`
 Carrega uma world (2 bytes) da RAM e salva em r1
 
-## lb - (Load Byte) `lb $r1 address` => `r1 = *address`
+## lb - (Load Byte) `lb $r1 [offset][address/register]` => `r1 = *address`
 Carrega 1 byte da RAM e salva em r1
 
-## sw - (Save World) `sw $r1 address` => `*address = r1`
+## sw - (Save World) `sw $r1 [offset][address/register]` => `*address = r1`
 Salva o valor de r1 na memoria, escreve 2 bytes
 
-## sb - (Save Byte) `sb $r1 address` => `*address = r1`
+## sb - (Save Byte) `sb $r1 [offset][address/register]` => `*address = r1`
 Salva o valor de r1 na memoria, escreve 1 byte
 
-## lv - (Load from VRAM) `lv $r1 address` => `r1 = *vram_address`
+## lv - (Load from VRAM) `lv $r1 [offset][vram_address/register]` => `r1 = *vram_address`
 Carregar um pixel da VRAM para r1
 
-## sv - (Save to VRAM) `sv $r1 address` => `*vram_address = r1`
+## sv - (Save to VRAM) `sv $r1 [offset][vram_address/register]` => `*vram_address = r1`
 Salva o pixel em r1 no endereço na VRAM
 
-# Syscalls
+## lrw - (Load from ROM) `lr $r1 [offset][rom_address/register]` => `r1 = *rom_address`
+Carrega uma word completa da ROM e salva em r1
+
+## lrb - (Load from ROM) `lr $r1 [offset][rom_address/register]` => `r1 = *rom_address`
+Carrega 1 byte da ROM e salva em r1
