@@ -3,14 +3,14 @@
 
     fatorial:
         pop     $t0
-        move    $rt $t0
-        li      $t1 1      
+        move    $rt, $t0
+        li      $t1, 1      
 
 _loop_1:
-        bgt     $t0 $t1 exit	    # if x > 1 then goto target
-            mult    $rt $rt $t0     #   rt *= x 
-            subi    $t0 $t0 1       #   $t0 = $t0 -1
-            j       _loop_1
+        bgt     $t0, $t1, exit    # if x > 1 then goto target
+        mult    $rt, $rt, $t0     #   rt *= x 
+        subi    $t0, $t0, 1       #   $t0 = $t0 -1
+        j       _loop_1
 _exit:
         return
             
@@ -31,7 +31,7 @@ _exit:
         jal print
         
         # exit
-        li $sc 0
+        li $sc, 0
         syscall 
 
         
