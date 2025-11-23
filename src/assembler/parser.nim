@@ -70,7 +70,7 @@ proc peek*(self: Parser): Token =
 
 # add, sub, mult, div, or, and, slt
 proc check_3_registers*(self: var Parser, opcode: string): (seq[string], bool) =
-    var instruction: seq[string] = @[opcode]
+    var instruction: seq[string] = @["INSTRUCTION", opcode]
 
     var tk: Token = self.peek()
     if (tk.tokenType != REGISTER) or (not (tk.value in REGISTERS)) :
@@ -107,7 +107,7 @@ proc check_3_registers*(self: var Parser, opcode: string): (seq[string], bool) =
 
 # addi, subi, multi, divi, ori, andi, slti
 proc check_imediatos(self: var Parser, opcode: string): (seq[string], bool) = 
-    var instruction: seq[string] = @[opcode]
+    var instruction: seq[string] = @["INSTRUCTION", opcode]
 
     var tk: Token = self.peek()
     if (tk.tokenType != REGISTER) or (not (tk.value in REGISTERS)) :
@@ -144,7 +144,7 @@ proc check_imediatos(self: var Parser, opcode: string): (seq[string], bool) =
 
 # beq, bne, bgt, bge, blt, ble
 proc parse_branch(self: var Parser, opcode: string): (seq[string], bool) =
-    var instruction: seq[string] = @[opcode]
+    var instruction: seq[string] = @["INSTRUCTION", opcode]
 
     var tk: Token = self.peek()
     if (tk.tokenType != REGISTER) or (not (tk.value in REGISTERS)) :
@@ -181,7 +181,7 @@ proc parse_branch(self: var Parser, opcode: string): (seq[string], bool) =
 
 # lw, lb, sw, sb, lv, sv, lrw
 proc parse_memorie_acess(self: var Parser, opcode: string): (seq[string], bool) =
-    var instruction: seq[string] = @[opcode]
+    var instruction: seq[string] = @["INSTRUCTION", opcode]
 
     var tk: Token = self.peek()
     if (tk.tokenType != REGISTER) or (not (tk.value in REGISTERS)) :
@@ -229,8 +229,7 @@ proc parse_memorie_acess(self: var Parser, opcode: string): (seq[string], bool) 
 
 # j, jr, jal
 proc parse_jump(self: var Parser, jumpType: string): (seq[string], bool) = 
-    var instruction: seq[string] = @[jumpType]
-
+    var instruction: seq[string] = @["INSTRUCTION", jumpType]
 
     var tk: Token = self.peek()
     if jumpType == "j" :
@@ -260,7 +259,7 @@ proc parse_jump(self: var Parser, jumpType: string): (seq[string], bool) =
     return (instruction, true)
 
 proc parse_move(self: var Parser): (seq[string], bool) = 
-    var instruction: seq[string] = @["move"]
+    var instruction: seq[string] = @["INSTRUCTION", "move"]
 
     var tk: Token = self.peek()
     if (tk.tokenType != REGISTER) or (not (tk.value in REGISTERS)) :
@@ -286,7 +285,7 @@ proc parse_move(self: var Parser): (seq[string], bool) =
     return (instruction, true)
 
 proc parse_li(self: var Parser): (seq[string], bool) = 
-    var instruction: seq[string] = @["li"]
+    var instruction: seq[string] = @["INSTRUCTION", "li"]
     var tk: Token = self.peek()
     
     if (tk.tokenType != REGISTER) or (not (tk.value in REGISTERS)) :
@@ -312,7 +311,7 @@ proc parse_li(self: var Parser): (seq[string], bool) =
     return (instruction, true)
 
 proc parse_return(self: var Parser): (seq[string], bool) = 
-    var instruction: seq[string] = @["return"]
+    var instruction: seq[string] = @["INSTRUCTION", "return"]
     var tk: Token = self.peek()
     
     if (tk.tokenType != NEW_LINE and tk.tokenType != COMMENT) :
@@ -322,7 +321,7 @@ proc parse_return(self: var Parser): (seq[string], bool) =
     return (instruction, true)
 
 proc parse_syscall(self: var Parser): (seq[string], bool) = 
-    var instruction: seq[string] = @["syscall"]
+    var instruction: seq[string] = @["INSTRUCTION", "syscall"]
     var tk: Token = self.peek()
     
     if (tk.tokenType != NEW_LINE and tk.tokenType != COMMENT) :
@@ -405,30 +404,40 @@ proc parse_instruction*(self: var Parser, token: Token): (seq[string], bool) =
     return (@[""], false)
 
 proc parse_label_def(self: var Parser, token: Token): (seq[string], bool) =
-    var instruction: seq[string] = @[token.value]
+    var instruction: seq[string] = @["JUMP_LABEL", token.value]
     
     let next: Token = self.get(self.position + 1)
     if (next.value == "\n") :
         return (instruction, true)
 
     if (next.tokenType == TYPE) :
+        instruction[0] = "CONSTANT"
         if (next.value == ".string") :
             instruction.add(next.value)
-            let value: Token = self.get(self.position + 2)
-            if (value.tokenType == STRING) :
-                instruction.add(value.value)
-            else :
-                echo "Uso inapropriado de '.string'. Linha: ", token.line 
-                return (@[], false)
+            var count: int = 2
+            var value: Token = self.get(self.position + count)
+            while value.tokenType != NEW_LINE :
+                if (value.tokenType == STRING) :
+                    instruction.add(value.value)
+                else :
+                    echo "Uso inapropriado de '.string'. Linha: ", token.line 
+                    return (@[], false)
+                count += 1
+                value = self.get(self.position + count)
 
         if (next.value in [".int8", ".int16"]) :
             instruction.add(next.value)
-            let value: Token = self.get(self.position + 2)
-            if (value.tokenType == NUMBER) :
-                instruction.add(value.value)
-            else :
-                echo "Uso inapropriado de '", next.value ,"'. Linha: ", token.line 
-                return (@[], false)
+            var count: int = 2
+            var value: Token = self.get(self.position + count)
+            while value.tokenType != NEW_LINE :
+                if (value.tokenType == NUMBER) :
+                    instruction.add(value.value)
+                else :
+                    echo "Uso inapropriado de '", next.value ,"'. Linha: ", token.line 
+                    return (@[], false)
+                count += 1
+                value = self.get(self.position + count)
+            
     else :
         echo "Uso inapropriado de definição de label. Linha: ", token.line 
         return (@[], false)

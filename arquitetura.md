@@ -18,12 +18,14 @@
 
 \$rt - procedure return
 
-\$dp - data pointer
+\$gp - data pointer
 
 \$sp - stack pointer
 
 \$fp - frame pointer
 
 \$sc - syscall number
+
+\$pc - program counter
 
 \$ra - return addres

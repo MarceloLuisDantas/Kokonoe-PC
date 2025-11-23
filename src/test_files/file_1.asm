@@ -6,7 +6,7 @@
         li      $t1, 1      
 
 _loop_1:
-        bgt     $t0, $t1, *exit   # if x > 1 then goto target
+        bgt     $t0, $t1, *_exit   # if x > 1 then goto target
         mult    $rt, $rt, $t0     #   rt *= x 
         subi    $t0, $t0, 1       #   $t0 = $t0 -1
         j       *_loop_1
@@ -43,7 +43,7 @@ _3_registradores:
     slt     $rt, $rt, $t0
         
 _imediatos:
-    addi    $rt, $rt, 3000
+    addi    $rt, $rt, 3001
     subi    $rt, $rt, 3000
     multi   $rt, $rt, 3000
     divi    $rt, $rt, 3000
@@ -52,12 +52,12 @@ _imediatos:
     slti    $rt, $rt, 3000
 
 _branch:
-    beq $rt, $rt, *GOTO 
-    bne $rt, $rt, *GOTO 
-    bgt $rt, $rt, *GOTO 
-    bge $rt, $rt, *GOTO 
-    blt $rt, $rt, *GOTO 
-    ble $rt, $rt, *GOTO
+    beq $rt, $rt, *_imediatos
+    bne $rt, $rt, *_imediatos
+    bgt $rt, $rt, *_imediatos
+    bge $rt, $rt, *_imediatos
+    blt $rt, $rt, *_imediatos
+    ble $rt, $rt, *_imediatos
 
 print:
     li $sc, 1 # print
@@ -99,9 +99,9 @@ game:
     sb $t0, 0($sp)   # salva player_hp na stack
     # $sp = 6
 
-    lrw $t0,  0(*notas) # $t0 = 124
-    lrw $t1, -2(*notas) # $t1 = 125
-    lrw $t2, -4(*notas) # $t2 = 125
+    lrw $t0, 0(*notas) # $t0 = 124
+    lrw $t1, 2(*notas) # $t1 = 125
+    lrw $t2, 4(*notas) # $t2 = 125
 
     addi $sp, $sp, 6 # $sp = 12
     sw $t0, -4($sp)
@@ -120,12 +120,10 @@ game:
     hello: .string "Hello World"
     nomes: .string "Reimu Hakurei" "Marisa Kirisame" "Alice"
 
-    idade: .int8   23
-    notas: .int16  124 125 126
-
-    # str_errada1: .string 123
-    # str_errada2: .string hello
-
-    # num_errado1: .int16 "hello"
+    idade:  .int8   23
+    num_n:  .int8   3
+    status: .int8   24 16 34   
+    notas:  .int16  124 125 126
 
     player_sprite: .string "A"  
+    

@@ -1,9 +1,242 @@
-type Word* = distinct int16
-type Byte* = distinct int8
+import strutils
+import rom
 
-type Instruction* = tuple
-    op: string
-    arg1: string
-    arg2: string
-    arg3: string
+type REGS = string
 
+type CPU* = object
+    zero*:  int16
+    t0*:    int16
+    t1*:    int16
+    t2*:    int16
+    t3*:    int16
+    t4*:    int16
+    t5*:    int16
+    rt*:    int16
+    gp*:    int16
+    sp*:    int16
+    fp*:    int16
+    sc*:    int16
+    ra*:    int16
+    pc*:    int16
+    ir*:    string
+    rom*:   ROM
+
+proc newCPU*(program: seq[seq[string]]): CPU =
+    result.rom = newRom()
+    var gp: int = result.rom.loadProgram(program)
+    result.gp = int16(gp)
+    result.pc = 0
+    return result
+
+proc setRegister(self: var CPU, dest: REGS, value: int16) = 
+    case dest
+    of "$t0":
+        self.t0 = value 
+    of "$t1":
+        self.t1 = value 
+    of "$t2":
+        self.t2 = value 
+    of "$t3":
+        self.t3 = value 
+    of "$t4":
+        self.t4 = value 
+    of "$t5":
+        self.t5 = value 
+    of "$pc":
+        self.pc = value 
+    of "$zero":
+        self.zero = 0
+    of "$sp":
+        self.sp = value 
+    of "$fp":
+        self.fp = value
+    of "$sc":
+        self.sc = value
+    of "$ra":
+        self.ra = value
+
+proc getRegister(self: var CPU, dest: REGS): int16 = 
+    case dest
+    of "$t0":
+        return self.t0
+    of "$t1":
+        return self.t1 
+    of "$t2":
+        return self.t2 
+    of "$t3":
+        return self.t3 
+    of "$t4":
+        return self.t4 
+    of "$t5":
+        return self.t5 
+    of "$pc":
+        return self.pc 
+    of "$zero":
+        return 0
+    of "$sp":
+        return self.sp 
+    of "$fp":
+        return self.fp 
+    of "$sc":
+        return self.sc 
+    of "$ra":
+        return self.ra
+
+proc add(self: var CPU, dest: REGS, src1: REGS, src2: REGS) =
+    let v1: int16 = self.getRegister(src1)
+    let v2: int16 = self.getRegister(src2)
+    self.setRegister(dest, v1 + v2)
+
+proc sub(self: var CPU, dest: REGS, src1: REGS, src2: REGS) =
+    let v1: int16 = self.getRegister(src1)
+    let v2: int16 = self.getRegister(src2)
+    self.setRegister(dest, v1 - v2)
+
+proc mult(self: var CPU, dest: REGS, src1: REGS, src2: REGS) =
+    let v1: int16 = self.getRegister(src1)
+    let v2: int16 = self.getRegister(src2)
+    self.setRegister(dest, v1 * v2)
+
+proc kdiv(self: var CPU, dest: REGS, src1: REGS, src2: REGS) =
+    let v1: int16 = self.getRegister(src1)
+    let v2: int16 = self.getRegister(src2)
+    self.setRegister(dest, v1 div v2)
+
+proc addi(self: var CPU, dest: REGS, src1: REGS, value: int16) =
+    let v1: int16 = self.getRegister(src1)
+    self.setRegister(dest, v1 + value)
+
+proc subi(self: var CPU, dest: REGS, src1: REGS, value: int16) =
+    let v1: int16 = self.getRegister(src1)
+    self.setRegister(dest, v1 - value)
+
+proc multi(self: var CPU, dest: REGS, src1: REGS, value: int16) =
+    let v1: int16 = self.getRegister(src1)
+    self.setRegister(dest, v1 * value)
+
+proc divi(self: var CPU, dest: REGS, src1: REGS, value: int16) =
+    let v1: int16 = self.getRegister(src1)
+    self.setRegister(dest, v1 div value)
+
+proc move(self: var CPU, dest: REGS, src: REGS) =
+    let v1: int16 = self.getRegister(src)
+    self.setRegister(dest, v1)
+
+proc li(self: var CPU, dest: REGS, value: int16) =
+    self.setRegister(dest, value)
+
+proc syscall(self: var CPU): int =
+    # exit
+    if self.sc == 0 :
+        return -1
+
+    # print $t0
+    elif self.sc == 1 :
+        echo self.t0
+    
+    return 1
+
+proc jump(self: var CPU, point: int16) = 
+    self.pc = point
+
+proc jr(self: var CPU, src: REGS) = 
+    self.pc = self.getRegister(src)
+
+proc jal(self: var CPU, point: int16) = 
+    self.ra = self.pc
+    self.pc = point
+
+proc ret(self: var CPU) =
+    self.pc = self.ra
+
+proc getNextInstruction*(self: var CPU) =
+    self.ir = self.rom.get(self.pc)
+    self.pc += 2
+
+proc beq(self: var CPU, src1: REGS, src2: REGS, point: int16) =
+    let v1: int16 = self.getRegister(src1)
+    let v2: int16 = self.getRegister(src2)
+    if v1 == v2 :
+        self.pc = point
+
+proc bne(self: var CPU, src1: REGS, src2: REGS, point: int16) =
+    let v1: int16 = self.getRegister(src1)
+    let v2: int16 = self.getRegister(src2)
+    if v1 != v2 :
+        self.pc = point
+
+proc bgt(self: var CPU, src1: REGS, src2: REGS, point: int16) =
+    let v1: int16 = self.getRegister(src1)
+    let v2: int16 = self.getRegister(src2)
+    if v1 > v2 :
+        self.pc = point
+
+proc bge(self: var CPU, src1: REGS, src2: REGS, point: int16) =
+    let v1: int16 = self.getRegister(src1)
+    let v2: int16 = self.getRegister(src2)
+    if v1 >= v2 :
+        self.pc = point
+
+proc blt(self: var CPU, src1: REGS, src2: REGS, point: int16) =
+    let v1: int16 = self.getRegister(src1)
+    let v2: int16 = self.getRegister(src2)
+    if v1 < v2 :
+        self.pc = point
+
+proc ble(self: var CPU, src1: REGS, src2: REGS, point: int16) =
+    let v1: int16 = self.getRegister(src1)
+    let v2: int16 = self.getRegister(src2)
+    if v1 <= v2 :
+        self.pc = point
+
+
+proc execCurrentInstruction*(self: var CPU): int =
+    let tokens: seq[string] = self.ir.split(" ")
+    case tokens[0]
+    of "add" :
+        self.add(tokens[1], tokens[2], tokens[3])
+    of "sub" :
+        self.sub(tokens[1], tokens[2], tokens[3])
+    of "mult" :
+        self.mult(tokens[1], tokens[2], tokens[3])
+    of "div" :
+        self.kdiv(tokens[1], tokens[2], tokens[3])
+    of "addi" :
+        self.addi(tokens[1], tokens[2], int16(parseint(tokens[3])))
+    of "subi" :
+        self.subi(tokens[1], tokens[2], int16(parseint(tokens[3])))
+    of "multi" :
+        self.multi(tokens[1], tokens[2], int16(parseint(tokens[3])))
+    of "divi" :
+        self.divi(tokens[1], tokens[2], int16(parseint(tokens[3])))
+    of "move" :
+        self.move(tokens[1], tokens[2])
+    of "li" :
+        self.li(tokens[1], int16(parseint(tokens[2])))
+    of "j" :
+        self.jump(int16(parseint(tokens[1])))
+    of "jal" :
+        self.jal(int16(parseint(tokens[1])))
+    of "jr" :
+        self.jr(tokens[1])
+    of "return" :
+        self.ret()
+    of "beq" :
+        self.beq(tokens[1], tokens[2], int16(parseint(tokens[3])))
+    of "bne" :
+        self.bne(tokens[1], tokens[2], int16(parseint(tokens[3])))
+    of "bgt" :
+        self.bgt(tokens[1], tokens[2], int16(parseint(tokens[3])))
+    of "bge" :
+        self.bge(tokens[1], tokens[2], int16(parseint(tokens[3])))
+    of "blt" :
+        self.blt(tokens[1], tokens[2], int16(parseint(tokens[3])))
+    of "ble" :
+        self.ble(tokens[1], tokens[2], int16(parseint(tokens[3])))
+    of "syscall" :
+        return self.syscall()
+    else :
+        # echo tokens
+        return -1
+
+    return 0
