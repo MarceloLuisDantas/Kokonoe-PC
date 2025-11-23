@@ -11,7 +11,7 @@ const INSTRUCTIONS* = [
     "add", "addi", "sub", "subi", "mult", "multi", "div", "divi", "move",
     "or", "ori", "and", "andi", "sll", "srl", "slt", "slti", "li", "syscall",
     "j", "jr", "jal", "beq", "bne", "bgt", "bge", "blt", "ble", "return",
-    "lw", "lb", "sw", "sb", "lv", "sv", "lrw", "lrb",
+    "lw", "lb", "sw", "sb", "lv", "sv", "lrw", "lrb", "inc", "dec",
     ".text", ".data"
 ]
 
@@ -37,6 +37,10 @@ const MEMORIE_ACCESS* = [
 
 const JUMP* = [
     "j", "jr", "jal"
+]
+
+const INCDEC* = [
+    "inc", "dec"
 ]
 
 const SECTIONS* = [
@@ -258,6 +262,27 @@ proc parse_jump(self: var Parser, jumpType: string): (seq[string], bool) =
 
     return (instruction, true)
 
+proc parse_inc_dec(self: var Parser, opcode: string) : (seq[string], bool) =
+    var instruction: seq[string] = @["INSTRUCTION", opcode]
+    var tk: Token = self.peek()
+    
+    if (tk.tokenType != REGISTER) :
+        echo opcode, " espera receber um registrador. Linha: ", tk.line
+        return (@[], false)
+
+    elif (not (tk.value in REGISTERS)) :
+        echo "'", tk.value, "' não é um registrador valido. Linha: ", tk.line, " Coluna: ", tk.column
+        return (@[], false)
+    
+    instruction.add(tk.value)
+
+    tk = self.get(self.position + 1)
+    if (tk.tokenType != NEW_LINE and tk.tokenType != COMMENT) :
+        echo "'", opcode, "' recebe apenas 1 parametro. Linha: ", tk.line
+        return (@[], false)
+    
+    return (instruction, true)
+
 proc parse_move(self: var Parser): (seq[string], bool) = 
     var instruction: seq[string] = @["INSTRUCTION", "move"]
 
@@ -390,6 +415,13 @@ proc parse_instruction*(self: var Parser, token: Token): (seq[string], bool) =
 
     elif (upcode == MOVE) :
         let (ins, ok) = parse_move(self)
+        if not ok :
+            echo "Erro na linha: ", token.line
+        else :
+            return (ins, true)
+
+    elif (upcode in INCDEC) :
+        let (ins, ok) = parse_inc_dec(self, upcode)
         if not ok :
             echo "Erro na linha: ", token.line
         else :

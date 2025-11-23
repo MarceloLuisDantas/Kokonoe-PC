@@ -102,6 +102,16 @@ proc kdiv(self: var CPU, dest: REGS, src1: REGS, src2: REGS) =
     let v2: int16 = self.getRegister(src2)
     self.setRegister(dest, v1 div v2)
 
+proc kand(self: var CPU, dest: REGS, src1: REGS, src2: REGS) =
+    let v1: int16 = self.getRegister(src1)
+    let v2: int16 = self.getRegister(src2)
+    self.setRegister(dest, v1 and v2)
+
+proc kor(self: var CPU, dest: REGS, src1: REGS, src2: REGS) =
+    let v1: int16 = self.getRegister(src1)
+    let v2: int16 = self.getRegister(src2)
+    self.setRegister(dest, v1 or v2)
+
 proc addi(self: var CPU, dest: REGS, src1: REGS, value: int16) =
     let v1: int16 = self.getRegister(src1)
     self.setRegister(dest, v1 + value)
@@ -117,6 +127,22 @@ proc multi(self: var CPU, dest: REGS, src1: REGS, value: int16) =
 proc divi(self: var CPU, dest: REGS, src1: REGS, value: int16) =
     let v1: int16 = self.getRegister(src1)
     self.setRegister(dest, v1 div value)
+
+proc andi(self: var CPU, dest: REGS, src1: REGS, value: int16) =
+    let v1: int16 = self.getRegister(src1)
+    self.setRegister(dest, v1 and value)
+
+proc ori(self: var CPU, dest: REGS, src1: REGS, value: int16) =
+    let v1: int16 = self.getRegister(src1)
+    self.setRegister(dest, v1 or value)
+
+proc sll(self: var CPU, dest: REGS, src1: REGS, value: int16) =
+    let v1: int16 = self.getRegister(src1)
+    self.setRegister(dest, v1 shl value)
+
+proc srl(self: var CPU, dest: REGS, src1: REGS, value: int16) =
+    let v1: int16 = self.getRegister(src1)
+    self.setRegister(dest, v1 shr value)
 
 proc move(self: var CPU, dest: REGS, src: REGS) =
     let v1: int16 = self.getRegister(src)
@@ -202,6 +228,27 @@ proc ble(self: var CPU, src1: REGS, src2: REGS, point: int16) =
     if v1 <= v2 :
         self.pc = point
 
+proc slt(self: var CPU, dest: REGS, src1: REGS, src2: REGS) =
+    let v1: int16 = self.getRegister(src1)
+    let v2: int16 = self.getRegister(src2)
+    if (v1 < v2) :
+        self.setRegister(dest, 1)
+    else :
+        self.setRegister(dest, 0)
+
+proc slti(self: var CPU, dest: REGS, src1: REGS, value: int16) =
+    let v1: int16 = self.getRegister(src1)
+    if (v1 < value) :
+        self.setRegister(dest, 1)
+    else :
+        self.setRegister(dest, 0)
+
+proc kinc(self: var CPU, dest: REGS) =
+    self.setRegister(dest, self.getRegister(dest) + 1)
+
+proc kdec(self: var CPU, dest: REGS) =
+    self.setRegister(dest, self.getRegister(dest) - 1)
+
 proc getNextInstruction*(self: var CPU): int =
     if (self.pc == self.gp) :
         return 1
@@ -259,6 +306,18 @@ proc execCurrentInstruction*(self: var CPU): int =
         self.blt(tokens[1], tokens[2], int16(parseint(tokens[3])))
     of "ble" :
         self.ble(tokens[1], tokens[2], int16(parseint(tokens[3])))
+    of "slt" :
+        self.slt(tokens[1], tokens[2], tokens[3])
+    of "slti" :
+        self.slti(tokens[1], tokens[2], int16(parseint(tokens[3])))
+    of "inc" :
+        self.kinc(tokens[1])
+    of "dec" :
+        self.kdec(tokens[1])
+    of "sll" :
+        self.sll(tokens[1], tokens[2], int16(parseint(tokens[3])))
+    of "srl" :
+        self.srl(tokens[1], tokens[2], int16(parseint(tokens[3])))
     of "lrb" :
         if (tokens[3][0] == '$') :
             self.lrb(tokens[1], int16(parseint(tokens[2])), self.getRegister(tokens[3]))

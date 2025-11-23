@@ -9,8 +9,8 @@
         lrb $t0, 0($t1)
         syscall
 
-        addi $t1, $t1, 1
-        subi $t2, $t2, 1
+        inc $t1
+        dec $t2
 
         j *loop
     end:
@@ -18,7 +18,6 @@
     # Newline
     li $t0, 10
     syscall
-
 
     li $sc, 0
     syscall
