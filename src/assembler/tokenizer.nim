@@ -11,6 +11,7 @@ type
         ARGUMENT,      # argumento para instrução
         LABEL_DEF,     # definição de label
         LABEL_REF,     # uso de labels
+        LABEL_ADDRESS, # endereço do label
         TYPE,          # .string, .word...
         SECTION,       # .text e .data
         OPEN_PARENTH   # (
@@ -227,4 +228,5 @@ proc tokenize*(self: var Tokenizer): (seq[Token], bool) =
                 echo "Character invalido na linha ", self.line
                 return (newSeq[Token](), false)
     
+    self.addToken(NEW_LINE, "\n")
     return (self.tokens, true)

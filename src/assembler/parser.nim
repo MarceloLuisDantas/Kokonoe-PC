@@ -11,7 +11,7 @@ const INSTRUCTIONS* = [
     "add", "addi", "sub", "subi", "mult", "multi", "div", "divi", "move",
     "or", "ori", "and", "andi", "sll", "srl", "slt", "slti", "li", "syscall",
     "j", "jr", "jal", "beq", "bne", "bgt", "bge", "blt", "ble", "return",
-    "lw", "lb", "sw", "sb", "lv", "sv", "lrw",
+    "lw", "lb", "sw", "sb", "lv", "sv", "lrw", "lrb",
     ".text", ".data"
 ]
 
@@ -32,7 +32,7 @@ const DATA_TYPE* = [
 ]
 
 const MEMORIE_ACCESS* = [
-    "lw", "lb", "sw", "sb", "lv", "sv", "lrw"
+    "lw", "lb", "sw", "sb", "lv", "sv", "lrw", "lrb"
 ]
 
 const JUMP* = [
@@ -179,7 +179,7 @@ proc parse_branch(self: var Parser, opcode: string): (seq[string], bool) =
 
     return (instruction, true)
 
-# lw, lb, sw, sb, lv, sv, lrw
+# lw, lb, sw, sb, lv, sv, lrw, lrb
 proc parse_memorie_acess(self: var Parser, opcode: string): (seq[string], bool) =
     var instruction: seq[string] = @["INSTRUCTION", opcode]
 
@@ -289,7 +289,7 @@ proc parse_li(self: var Parser): (seq[string], bool) =
     var tk: Token = self.peek()
     
     if (tk.tokenType != REGISTER) or (not (tk.value in REGISTERS)) :
-        echo "registrador invalido. Linha: ", tk.line
+        echo tk.value, " - registrador invalido. Linha: ", tk.line
         return (@[], false)
     instruction.add(tk.value)
 
@@ -299,8 +299,9 @@ proc parse_li(self: var Parser): (seq[string], bool) =
 
     tk = self.get(self.position + 2)
     if (tk.tokenType != NUMBER) :
-        echo "'", tk.value, "' Não é um numero. Linha: ", tk.line
-        return (@[], false)
+        if (tk.tokenType != LABEL_REF) :
+            echo "'", tk.value, "' Não é um numero ou label valido. Linha: ", tk.line
+            return (@[], false)
     instruction.add(tk.value)
 
     tk = self.get(self.position + 3)

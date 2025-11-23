@@ -88,7 +88,7 @@ proc showData*(self: ROM) =
 
 proc loadStringToRom(self: var ROM, value: string) =
     for c in value :
-        self.add($c)
+        self.add($(int(c)))
     self.add("\0")
 
 proc loadStringsToRom(self: var ROM, tokens: seq[string]) =
@@ -140,10 +140,18 @@ proc loadProgram*(self: var ROM, program: seq[seq[string]]): int =
             elif (tokens[1] in JUMPS) :
                 tokens[2] = intToStr(jumps_table[tokens[2][1..^1]])
             elif (tokens[1] in ROM_ACESS) :
-                tokens[4] = intToStr(constant_table[tokens[4][1..^1]])
-                       
-            self.add(tokens[1..^1].join(" "))
-            self.add(" -")
+                if tokens[4][0] == '*' :
+                    tokens[4] = intToStr(constant_table[tokens[4][1..^1]])
+            elif (tokens[1] == "li") :
+                if (tokens[3][0] == '*') :
+                    tokens[3] = intToStr(constant_table[tokens[3][1..^1]])
+
+            if tokens[1] in ["syscall", "return"] :
+                self.add(tokens[1][0..2])
+                self.add(tokens[1][3..^1])
+            else :
+                self.add(tokens[1])
+                self.add(tokens[2..^1].join(" "))
 
         elif (tokens[0] == "CONSTANT") :
             if (tokens[2] == ".string") :

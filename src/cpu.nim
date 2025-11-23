@@ -125,14 +125,29 @@ proc move(self: var CPU, dest: REGS, src: REGS) =
 proc li(self: var CPU, dest: REGS, value: int16) =
     self.setRegister(dest, value)
 
+proc lrw(self: var CPU, dest: REGS, offset: int16, point: int16) =
+    let lowb: string = self.rom.get(self.gp + point + offset)
+    let highb: string = self.rom.get(self.gp + point + offset + 1)
+    return
+
+proc lrb(self: var CPU, dest: REGS, offset: int16, point: int16) =
+    let value: int16 = int16(parseInt(self.rom.get(self.gp + point + offset)))
+    self.setRegister(dest, value)
+
 proc syscall(self: var CPU): int =
     # exit
     if self.sc == 0 :
         return -1
 
-    # print $t0
+    # printInt t0 
     elif self.sc == 1 :
         echo self.t0
+
+    # printChar t0
+    elif self.sc == 2 :
+        stdout.write(char(self.t0))
+        # echo char(self.t0)
+        # echo self.t0
     
     return 1
 
@@ -148,10 +163,6 @@ proc jal(self: var CPU, point: int16) =
 
 proc ret(self: var CPU) =
     self.pc = self.ra
-
-proc getNextInstruction*(self: var CPU) =
-    self.ir = self.rom.get(self.pc)
-    self.pc += 2
 
 proc beq(self: var CPU, src1: REGS, src2: REGS, point: int16) =
     let v1: int16 = self.getRegister(src1)
@@ -189,6 +200,19 @@ proc ble(self: var CPU, src1: REGS, src2: REGS, point: int16) =
     if v1 <= v2 :
         self.pc = point
 
+proc getNextInstruction*(self: var CPU): int =
+    if (self.pc == self.gp) :
+        return 1
+
+    let first_half: string = self.rom.get(self.pc)
+    let second_half: string = self.rom.get(self.pc + 1)
+    if (first_half in ["sys", "ret"]) :
+        self.ir = [first_half, second_half].join("")
+    else :
+        self.ir = [first_half, second_half].join(" ")
+
+    self.pc += 2
+    return 0
 
 proc execCurrentInstruction*(self: var CPU): int =
     let tokens: seq[string] = self.ir.split(" ")
@@ -233,10 +257,20 @@ proc execCurrentInstruction*(self: var CPU): int =
         self.blt(tokens[1], tokens[2], int16(parseint(tokens[3])))
     of "ble" :
         self.ble(tokens[1], tokens[2], int16(parseint(tokens[3])))
+    of "lrb" :
+        if (tokens[3][0] == '$') :
+            self.lrb(tokens[1], int16(parseint(tokens[2])), self.getRegister(tokens[3]))
+        else :
+            self.lrb(tokens[1], int16(parseint(tokens[2])), int16(parseint(tokens[3])))
+    of "lrw" :
+        if (tokens[3][0] == '$') :
+            self.lrw(tokens[1], int16(parseint(tokens[2])), self.getRegister(tokens[3]))
+        else :
+            self.lrw(tokens[1], int16(parseint(tokens[2])), int16(parseint(tokens[3])))
     of "syscall" :
         return self.syscall()
     else :
         # echo tokens
-        return -1
+        return -2  
 
     return 0

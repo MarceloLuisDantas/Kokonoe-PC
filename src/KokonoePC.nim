@@ -1,4 +1,5 @@
 from assembler/assembler import read_program
+import rom
 import cpu
 import std/os
 
@@ -15,10 +16,17 @@ when isMainModule:
 
         else :
             var cpu: CPU = newCpu(program)
-
+            cpu.rom.showData()
+            var result: int
             while true :
-                cpu.getNextInstruction()
-                if cpu.execCurrentInstruction() == -1 :
+                if cpu.getNextInstruction() == 1 :
+                    echo "Leitura invalida de seção de data ao buscar instrução"
                     break
+
+                result = cpu.execCurrentInstruction()
+                if result == -1 :
+                    break
+                elif result == -2 :
+                    echo "invalid instruciton"
 
         
