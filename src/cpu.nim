@@ -131,7 +131,9 @@ proc lrw(self: var CPU, dest: REGS, offset: int16, point: int16) =
     return
 
 proc lrb(self: var CPU, dest: REGS, offset: int16, point: int16) =
-    let value: int16 = int16(parseInt(self.rom.get(self.gp + point + offset)))
+    let y = self.rom.get(self.gp + point + offset)
+    let x = int16(parseInt(y))
+    let value: int16 = x
     self.setRegister(dest, value)
 
 proc syscall(self: var CPU): int =

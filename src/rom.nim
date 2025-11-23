@@ -61,7 +61,7 @@ proc getJumpsTableAndConstantsTablesAndGP(
             filtered_program.add(tokens)
             var count: int = 3
             while count != tokens.len() :
-                constant_line += tokens[count].len() + 1
+                constant_line += tokens[count].len()
                 count += 1
 
         if (tokens[2] == ".int8") :
@@ -89,7 +89,7 @@ proc showData*(self: ROM) =
 proc loadStringToRom(self: var ROM, value: string) =
     for c in value :
         self.add($(int(c)))
-    self.add("\0")
+    # self.add("\0")
 
 proc loadStringsToRom(self: var ROM, tokens: seq[string]) =
     var count = 3

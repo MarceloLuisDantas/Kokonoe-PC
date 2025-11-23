@@ -16,7 +16,7 @@ when isMainModule:
 
         else :
             var cpu: CPU = newCpu(program)
-            cpu.rom.showData()
+            # cpu.rom.showData()
             var result: int
             while true :
                 if cpu.getNextInstruction() == 1 :
