@@ -155,6 +155,9 @@ proc move(self: var CPU, dest: REGS, src: REGS) =
 proc li(self: var CPU, dest: REGS, value: int16) =
     self.setRegister(dest, value)
 
+proc la(self: var CPU, dest: REGS, value: int16) =
+    self.setRegister(dest, value)
+
 proc lrw(self: var CPU, dest: REGS, offset: int16, point: int16) =
     let half_1: int16 = int16(parseInt(self.rom.get(self.gp + point + offset)))
     let half_2: int16 = int16(parseInt(self.rom.get(self.gp + point + offset + 1)))
@@ -291,6 +294,8 @@ proc execCurrentInstruction*(self: var CPU): int =
         self.move(tokens[1], tokens[2])
     of "li" :
         self.li(tokens[1], int16(parseint(tokens[2])))
+    of "la" :
+        self.la(tokens[1], int16(parseint(tokens[2])))
     of "j" :
         self.jump(int16(parseint(tokens[1])))
     of "jal" :

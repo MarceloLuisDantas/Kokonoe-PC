@@ -12,7 +12,7 @@ const INSTRUCTIONS* = [
     "or", "ori", "and", "andi", "sll", "srl", "slt", "slti", "li", "syscall",
     "j", "jr", "jal", "beq", "bne", "bgt", "bge", "blt", "ble", "return",
     "lw", "lb", "sw", "sb", "lv", "sv", "lrw", "lrb", "inc", "dec",
-    ".text", ".data"
+    ".text", ".data", "la"
 ]
 
 const THREE_REGISTERS_INS* = [
@@ -47,9 +47,11 @@ const SECTIONS* = [
     ".text", ".data"
 ]
 
+const LI = "li"
+const LA = "la"
+
 const RETURN = "return"
 const SYSCALL = "syscall"
-const LI = "li"
 const MOVE = "move"
 
 const REGISTERS* = [
@@ -324,14 +326,39 @@ proc parse_li(self: var Parser): (seq[string], bool) =
 
     tk = self.get(self.position + 2)
     if (tk.tokenType != NUMBER) :
-        if (tk.tokenType != LABEL_REF) :
-            echo "'", tk.value, "' Não é um numero ou label valido. Linha: ", tk.line
-            return (@[], false)
+        echo "'", tk.value, "' Não é um numero valido. Linha: ", tk.line
+        return (@[], false)
     instruction.add(tk.value)
 
     tk = self.get(self.position + 3)
     if (tk.tokenType != NEW_LINE and tk.tokenType != COMMENT) :
         echo "'li' recebe apenas 2 parametros. Linha: ", tk.line
+        return (@[], false)
+
+    return (instruction, true)
+
+proc parse_la(self: var Parser): (seq[string], bool) = 
+    var instruction: seq[string] = @["INSTRUCTION", "la"]
+    var tk: Token = self.peek()
+    
+    if (tk.tokenType != REGISTER) or (not (tk.value in REGISTERS)) :
+        echo tk.value, " - registrador invalido. Linha: ", tk.line
+        return (@[], false)
+    instruction.add(tk.value)
+
+    if (self.get(self.position + 1).value != ",") :
+        echo "Argumentos devem ser separados por virgula. Linha: ", tk.line
+        return (@[], false)
+
+    tk = self.get(self.position + 2)
+    if (tk.tokenType != LABEL_REF) :
+        echo "'", tk.value, "' Não é um label valido. Linha: ", tk.line
+        return (@[], false)
+    instruction.add(tk.value)
+
+    tk = self.get(self.position + 3)
+    if (tk.tokenType != NEW_LINE and tk.tokenType != COMMENT) :
+        echo "'la' recebe apenas 2 parametros. Linha: ", tk.line
         return (@[], false)
 
     return (instruction, true)
@@ -401,6 +428,13 @@ proc parse_instruction*(self: var Parser, token: Token): (seq[string], bool) =
 
     elif (upcode == LI) :
         let (ins, ok) = parse_li(self)
+        if not ok :
+            echo "Erro na linha: ", token.line
+        else :
+            return (ins, true)
+    
+    elif (upcode == LA) :
+        let (ins, ok) = parse_la(self)
         if not ok :
             echo "Erro na linha: ", token.line
         else :

@@ -2,13 +2,12 @@
     j *_main
 
 _print_notas:    
-    li $t3, *notas
+    la $t3, *notas
     lrb $t4, 0(*quantas)
 
     loop_pn:
-        beq $t4, $zero, *end_pn
-
-        li $t1, *s_notas
+        beq $t4, $zero, *end_pn        
+        la $t1, *s_notas
         lrb $t2, 0(*len_s)
         loop_ps:
             beq $t2, $zero, *end_ps
@@ -33,7 +32,7 @@ _print_notas:
     return
 
 _calc_media:
-    li $t3, *notas
+    la $t3, *notas
     lrb $t4, 0(*quantas)
     move $t5, $t4
 
@@ -52,7 +51,7 @@ _calc_media:
     return
 
 _print_media:    
-    li $t1, *s_media
+    la $t1, *s_media
     lrb $t2, 0(*len_s)
 
     li $sc, 2
@@ -77,13 +76,21 @@ _main:
     jal *_calc_media
     move $t5, $rt
     jal *_print_media
+    
+    # printa new line
+    li $t0, 10
+    li $sc, 2
+    syscall
 
     li $sc, 0
     syscall
 
 .data
+    len_s:      .int8       0
     s_notas:    .string     " nota: "
+    len_s:      .int8       0
     s_media:    .string     "media: "
+    len_s:      .int8       0
     len_s:      .int8       7
     quantas:    .int8       4
     notas:      .int16      104 223 32 91

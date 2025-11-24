@@ -146,7 +146,7 @@ proc loadProgram*(self: var ROM, program: seq[seq[string]]): int =
             elif (tokens[1] in ROM_ACESS) :
                 if tokens[4][0] == '*' :
                     tokens[4] = intToStr(constant_table[tokens[4][1..^1]])
-            elif (tokens[1] == "li") :
+            elif (tokens[1] == "la") :
                 if (tokens[3][0] == '*') :
                     tokens[3] = intToStr(constant_table[tokens[3][1..^1]])
 
