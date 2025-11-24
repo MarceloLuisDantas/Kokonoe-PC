@@ -106,8 +106,12 @@ proc loadInt8ToRom(self: var ROM, tokens: seq[string]) =
 proc loadInt16ToRom(self: var ROM, tokens: seq[string]) =
     var count = 3
     while (count != tokens.len()) :
-        self.add(tokens[count])
-        self.add(" -")
+        let value: int16 = int16(parseInt(tokens[count]))
+        let half_1: int16 = cast[int16](value and 0x00FF)
+        let half_2: int16 = cast[int16](value and 0xFF00)
+
+        self.add($half_1)
+        self.add($half_2)
         count += 1
 
 # carrega o programa na memoria, e retornar o local a qual começa a area estatica ($gp)

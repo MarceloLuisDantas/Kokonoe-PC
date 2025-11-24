@@ -152,9 +152,10 @@ proc li(self: var CPU, dest: REGS, value: int16) =
     self.setRegister(dest, value)
 
 proc lrw(self: var CPU, dest: REGS, offset: int16, point: int16) =
-    let lowb: string = self.rom.get(self.gp + point + offset)
-    let highb: string = self.rom.get(self.gp + point + offset + 1)
-    return
+    let half_1: int16 = int16(parseInt(self.rom.get(self.gp + point + offset)))
+    let half_2: int16 = int16(parseInt(self.rom.get(self.gp + point + offset + 1)))
+    let value: int16 = half_1 or half_2
+    self.setRegister(dest, value)
 
 proc lrb(self: var CPU, dest: REGS, offset: int16, point: int16) =
     let y = self.rom.get(self.gp + point + offset)
