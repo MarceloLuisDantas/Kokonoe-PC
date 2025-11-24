@@ -54,7 +54,7 @@ const MOVE = "move"
 
 const REGISTERS* = [
     "$zero", "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", 
-    "$rt", "$gp", "$sp", "$fp", "$sc", "$ra"
+    "$rt", "$gp", "$sp", "$fp", "$sc", "$ra", "$pc"
 ]
 
 proc newParser*(tokens: seq[Token]): Parser =

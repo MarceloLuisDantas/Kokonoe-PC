@@ -54,6 +54,8 @@ proc setRegister(self: var CPU, dest: REGS, value: int16) =
         self.sc = value
     of "$ra":
         self.ra = value
+    of "$rt":
+        self.rt = value
 
 proc getRegister(self: var CPU, dest: REGS): int16 = 
     case dest
@@ -81,6 +83,8 @@ proc getRegister(self: var CPU, dest: REGS): int16 =
         return self.sc 
     of "$ra":
         return self.ra
+    of "$rt":
+        return self.rt
 
 proc add(self: var CPU, dest: REGS, src1: REGS, src2: REGS) =
     let v1: int16 = self.getRegister(src1)
@@ -191,7 +195,7 @@ proc jal(self: var CPU, point: int16) =
     self.pc = point
 
 proc ret(self: var CPU) =
-    self.pc = self.ra
+    self.pc = self.ra 
 
 proc beq(self: var CPU, src1: REGS, src2: REGS, point: int16) =
     let v1: int16 = self.getRegister(src1)
