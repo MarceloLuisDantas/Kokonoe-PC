@@ -55,8 +55,8 @@ const SYSCALL = "syscall"
 const MOVE = "move"
 
 const REGISTERS* = [
-    "$zero", "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", 
-    "$rt", "$gp", "$sp", "$fp", "$sc", "$ra", "$pc"
+    "$zero", "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$rt", 
+    "$sp", "$fp", "$sc", "$gp", "$ra", "$pc", "$ir", "$bk"
 ]
 
 proc newParser*(tokens: seq[Token]): Parser =

@@ -177,7 +177,7 @@ proc syscall(self: var CPU): int =
 
     # printInt t0 
     elif self.sc == 1 :
-        echo self.t0
+        stdout.write(self.t0)
 
     # printChar t0
     elif self.sc == 2 :

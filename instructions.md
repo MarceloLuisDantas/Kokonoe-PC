@@ -29,6 +29,14 @@ Copia o valor de r2 para r1
 ## li - (Load Immediate) `li $r1 x` => `r1 = x`
 Copia o valor de r2 para r1
 
+## la - (Load Address) `la $r1 *value` => `r1 = &x`
+Salva o endereço de memoria de um valor em r1
+
+## inc - (Incrementa) `inc $r1` => `r1++`
+
+## dec - (Decrementa) `dec $r1` => `r1--`
+
+
 # Instruções Logicas
 ## or - (Or) `or $r1 $r2 $r3` => `r1 = r2 or r3`
 Aplica OR entre r2 e r3 e salva o resultado em r1
@@ -82,16 +90,10 @@ Pula para o endereço especificado caso r1 for menor que r2, caso contrario, seg
 ## ble - (Branch on Less Than or Equal) `ble $r1 $r2 address` => `if(r1 <= r2) goto address`
 Pula para o endereço especificado caso r1 for menor ou igual a r2, caso contrario, segue para a proxima instrução
 
-## ret - (Return) `ret` => `pc = ra`
+## return - (Return) `return` => `pc = ra`
 Seta o PC para o endereço salvo em $ra salvo por `jal`
  
 # Instruções de Data Transfer
-## push - (Push to Stack) `push $r1` => `stack.push(r1)`
-Salva o valor de r1 na stack
-
-## pop - (Push to Stack) `pop $r1` => `r1 = stack.pop()`
-Remove o primeiro valor da stack e salva em r1
-
 ## lw - (Load World) `lw $r1 [offset][address/register]` => `r1 = *address`
 Carrega uma world (2 bytes) da RAM e salva em r1
 

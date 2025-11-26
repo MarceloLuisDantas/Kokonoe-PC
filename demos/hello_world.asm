@@ -1,6 +1,6 @@
 .text
     # Carrega em t1 o ponteiro para a string hello_world
-    li $t1, *hello_world
+    la $t1, *hello_world
     li $t2, 11 # tamanho da string
 
     # Syscall 2 = printChar
