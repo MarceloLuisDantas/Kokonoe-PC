@@ -104,6 +104,8 @@ proc mult(self: var CPU, dest: REGS, src1: REGS, src2: REGS) =
 proc kdiv(self: var CPU, dest: REGS, src1: REGS, src2: REGS) =
     let v1: int16 = self.getRegister(src1)
     let v2: int16 = self.getRegister(src2)
+    # echo v1
+    # echo v2
     self.setRegister(dest, v1 div v2)
 
 proc kand(self: var CPU, dest: REGS, src1: REGS, src2: REGS) =

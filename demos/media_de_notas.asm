@@ -8,11 +8,10 @@ _print_notas:
     loop_pn:
         beq $t4, $zero, *end_pn        
         la $t1, *s_notas
-        lrb $t2, 0(*len_s)
+        li $sc, 2
         loop_ps:
-            beq $t2, $zero, *end_ps
             lrb $t0, 0($t1)
-            li $sc, 2
+            beq $t0, $zero, *end_ps
             syscall
             inc $t1
             dec $t2
@@ -21,6 +20,10 @@ _print_notas:
 
         lrw $t0, 0($t3)
         li $sc, 1
+        syscall
+
+        li $t0, 10
+        li $sc, 2
         syscall
 
         addi $t3, $t3, 2
@@ -52,15 +55,13 @@ _calc_media:
 
 _print_media:    
     la $t1, *s_media
-    lrb $t2, 0(*len_s)
 
     li $sc, 2
     loop_pm:
-        beq $t2, $zero, *end_pm
         lrb $t0, 0($t1)
+        beq $t0, $zero, *end_pm
         syscall
         inc $t1
-        dec $t2
         j *loop_pm
     end_pm:
 
@@ -86,11 +87,7 @@ _main:
     syscall
 
 .data
-    len_s:      .int8       0
-    s_notas:    .string     " nota: "
-    len_s:      .int8       0
-    s_media:    .string     "media: "
-    len_s:      .int8       0
-    len_s:      .int8       7
+    s_notas:    .string     " nota: \0"
+    s_media:    .string     "media: \0"
     quantas:    .int8       4
     notas:      .int16      104 223 32 91

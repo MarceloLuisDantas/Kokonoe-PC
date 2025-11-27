@@ -61,7 +61,15 @@ proc getJumpsTableAndConstantsTablesAndGP(
             filtered_program.add(tokens)
             var count: int = 3
             while count != tokens.len() :
-                constant_line += tokens[count].len()
+                var str_len: int = 0
+                var index: int = 0
+                while index < tokens[count].len() :
+                    if (tokens[count][index] == '\\') :
+                        if (index != tokens[count].len() - 1) :
+                            index += 2
+                    str_len += 1
+                    index += 1
+                constant_line += str_len
                 count += 1
 
         if (tokens[2] == ".int8") :
@@ -86,15 +94,31 @@ proc showData*(self: ROM) =
             echo count, " - "
         count += 1
 
-proc loadStringToRom(self: var ROM, value: string) =
-    for c in value :
-        self.add($(int(c)))
-    # self.add("\0")
+proc loadStringToRom(self: var ROM, value: string): bool =
+    var count: int = 0
+    while count < value.len :
+        let c: char = value[count]
+        if c == '\\' :
+            if (count == value.len - 1) :
+                return false
+            let op: char = value[count + 1]
+            if op == 'n' :
+                self.add($int('\n'))
+            elif op == '0' :
+                self.add($int('\0'))
+            elif op == '\\' :
+                self.add($int('\\'))
+            count += 2
+        else :
+            self.add($int(c))
+            count += 1
+    
+    return true
 
 proc loadStringsToRom(self: var ROM, tokens: seq[string]) =
     var count = 3
     while (count != tokens.len()) :
-        self.loadStringToRom(tokens[count])
+        discard self.loadStringToRom(tokens[count])
         count += 1
 
 proc loadInt8ToRom(self: var ROM, tokens: seq[string]) =

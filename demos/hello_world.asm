@@ -1,20 +1,19 @@
 .text
     # Carrega em t1 o ponteiro para a string hello_world
     la $t1, *hello_world
-    li $t2, 11 # tamanho da string
 
     # Syscall 2 = printChar
     li $sc, 2
     loop:
-        # if (t2 == 0): goto end
-        beq $t2, $zero, *end    
-
         # carrega um character da string em $t0 em ASCII
         lrb $t0, 0($t1) 
+
+        # if (t0 == \0): goto end
+        beq $t0, $zero, *end    
+
         syscall # Chama a printChar
 
         inc $t1 # Incrementa t1, avançando em 1 o ponteiro
-        dec $t2 # Decrementa t2, 
 
         # repete ate que o tamanho sejá 0
         j *loop # goto loop
@@ -30,4 +29,4 @@
 
 .data
     # Definição de uma string na rom
-    hello_world: .string "Hello World"
+    hello_world: .string "Hello World\0"
