@@ -1,5 +1,6 @@
 import strutils
 import rom
+import ram
 
 type REGS = string
 
@@ -20,8 +21,10 @@ type CPU* = object
     pc*:    int16
     ir*:    string
     rom*:   ROM
+    ram*:   RAM
 
 proc newCPU*(program: seq[seq[string]]): CPU =
+    result.ram = newRam()
     result.rom = newRom()
     var gp: int = result.rom.loadProgram(program)
     result.gp = int16(gp)
@@ -171,6 +174,31 @@ proc lrb(self: var CPU, dest: REGS, offset: int16, point: int16) =
     let x = int16(parseInt(y))
     let value: int16 = x
     self.setRegister(dest, value)
+
+proc lw(self: var CPU, dest: REGS, offset: int16, point: int16) =
+    let half_1: int8 = (self.ram.get(point + offset))
+    let half_2: int8 = (self.ram.get(point + offset + 1))
+    var value: int16 = half_1
+    value = value shl 8
+    value = value or half2
+    self.setRegister(dest, value)
+
+proc lb(self: var CPU, dest: REGS, offset: int16, point: int16) =
+    let value: int8 = self.ram.get(point + offset)
+    self.setRegister(dest, value)
+
+proc sw(self: var CPU, src: REGS, offset: int16, point: int16) =
+    let value: int16 = self.getRegister(src)
+    let half_1: int8 = cast[int8](value and 0x00FF)
+    self.ram.set(half_1, offset + point)
+
+    let half_2: int8 = cast[int8](value and 0xFF00)
+    self.ram.set(half_2, offset + point + 1)
+
+proc sb(self: var CPU, src: REGS, offset: int16, point: int16) =
+    let x = self.getRegister(src)
+    let value: int8 = cast[int8](x and 0x00FF)
+    self.ram.set(value, offset + point)
 
 proc syscall(self: var CPU): int =
     # exit
@@ -340,6 +368,26 @@ proc execCurrentInstruction*(self: var CPU): int =
             self.lrw(tokens[1], int16(parseint(tokens[2])), self.getRegister(tokens[3]))
         else :
             self.lrw(tokens[1], int16(parseint(tokens[2])), int16(parseint(tokens[3])))
+    of "lw" :
+        if (tokens[3][0] == '$') :
+            self.lw(tokens[1], int16(parseint(tokens[2])), self.getRegister(tokens[3]))
+        else :
+            self.lw(tokens[1], int16(parseint(tokens[2])), int16(parseint(tokens[3])))
+    of "lb" :
+        if (tokens[3][0] == '$') :
+            self.lb(tokens[1], int16(parseint(tokens[2])), self.getRegister(tokens[3]))
+        else :
+            self.lb(tokens[1], int16(parseint(tokens[2])), int16(parseint(tokens[3])))
+    of "sw" :
+        if (tokens[3][0] == '$') :
+            self.sw(tokens[1], int16(parseint(tokens[2])), self.getRegister(tokens[3]))
+        else :
+            self.sw(tokens[1], int16(parseint(tokens[2])), int16(parseint(tokens[3])))
+    of "sb" :
+        if (tokens[3][0] == '$') :
+            self.sb(tokens[1], int16(parseint(tokens[2])), self.getRegister(tokens[3]))
+        else :
+            self.sb(tokens[1], int16(parseint(tokens[2])), int16(parseint(tokens[3])))
     of "syscall" :
         return self.syscall()
     else :

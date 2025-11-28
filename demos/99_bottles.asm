@@ -28,7 +28,7 @@ _main:
             j *p1
         singular1:
             la $t2, *lyric_6
-        p1:
+        p1: 
         jal *_print_lyric
         
         move $t0, $t5

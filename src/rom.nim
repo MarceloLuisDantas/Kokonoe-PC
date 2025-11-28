@@ -66,7 +66,7 @@ proc getJumpsTableAndConstantsTablesAndGP(
                 while index < tokens[count].len() :
                     if (tokens[count][index] == '\\') :
                         if (index != tokens[count].len() - 1) :
-                            index += 2
+                            index += 1
                     str_len += 1
                     index += 1
                 constant_line += str_len
