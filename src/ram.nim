@@ -18,3 +18,9 @@ proc set*(self: var RAM, value: int8, index: int16) =
 
 proc get*(self: RAM, index: int16): int8 =
     return self.data[index]
+
+proc show*(self: RAM) =
+    var count: int = 0
+    while count != self.len :
+        echo count, " - ", self.data[count]
+        count += 1

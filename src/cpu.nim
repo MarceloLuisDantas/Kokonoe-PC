@@ -178,9 +178,9 @@ proc lrb(self: var CPU, dest: REGS, offset: int16, point: int16) =
 proc lw(self: var CPU, dest: REGS, offset: int16, point: int16) =
     let half_1: int8 = (self.ram.get(point + offset))
     let half_2: int8 = (self.ram.get(point + offset + 1))
-    var value: int16 = half_1
+    var value: int16 = half_2
     value = value shl 8
-    value = value or half2
+    value = value or half1
     self.setRegister(dest, value)
 
 proc lb(self: var CPU, dest: REGS, offset: int16, point: int16) =
@@ -194,11 +194,13 @@ proc sw(self: var CPU, src: REGS, offset: int16, point: int16) =
 
     let half_2: int8 = cast[int8](value and 0xFF00)
     self.ram.set(half_2, offset + point + 1)
+    self.ram.len += 2
 
 proc sb(self: var CPU, src: REGS, offset: int16, point: int16) =
     let x = self.getRegister(src)
     let value: int8 = cast[int8](x and 0x00FF)
     self.ram.set(value, offset + point)
+    self.ram.len += 1
 
 proc syscall(self: var CPU): int =
     # exit
@@ -212,8 +214,10 @@ proc syscall(self: var CPU): int =
     # printChar t0
     elif self.sc == 2 :
         stdout.write(char(self.t0))
-        # echo char(self.t0)
-        # echo self.t0
+
+    # show ram
+    elif self.sc == -1 :
+        self.ram.show()
     
     return 1
 
@@ -302,7 +306,7 @@ proc getNextInstruction*(self: var CPU): int =
     return 0
 
 proc execCurrentInstruction*(self: var CPU): int =
-    let tokens: seq[string] = self.ir.split(" ")
+    var tokens: seq[string] = self.ir.split(" ")
     case tokens[0]
     of "add" :
         self.add(tokens[1], tokens[2], tokens[3])
@@ -369,25 +373,38 @@ proc execCurrentInstruction*(self: var CPU): int =
         else :
             self.lrw(tokens[1], int16(parseint(tokens[2])), int16(parseint(tokens[3])))
     of "lw" :
+        if (tokens[2][0] == '$') :
+            tokens[2] = $(self.getRegister(tokens[2]))
+
         if (tokens[3][0] == '$') :
-            self.lw(tokens[1], int16(parseint(tokens[2])), self.getRegister(tokens[3]))
-        else :
-            self.lw(tokens[1], int16(parseint(tokens[2])), int16(parseint(tokens[3])))
+            tokens[3] = $(self.getRegister(tokens[3]))
+        # echo tokens
+
+        self.lw(tokens[1], int16(parseint(tokens[2])), int16(parseint(tokens[3])))
     of "lb" :
+        if (tokens[2][0] == '$') :
+            tokens[2] = $(self.getRegister(tokens[2]))
+
         if (tokens[3][0] == '$') :
-            self.lb(tokens[1], int16(parseint(tokens[2])), self.getRegister(tokens[3]))
-        else :
-            self.lb(tokens[1], int16(parseint(tokens[2])), int16(parseint(tokens[3])))
+            tokens[3] = $(self.getRegister(tokens[3]))
+
+        self.lb(tokens[1], int16(parseint(tokens[2])), int16(parseint(tokens[3])))
     of "sw" :
+        if (tokens[2][0] == '$') :
+            tokens[2] = $(self.getRegister(tokens[2]))
+
         if (tokens[3][0] == '$') :
-            self.sw(tokens[1], int16(parseint(tokens[2])), self.getRegister(tokens[3]))
-        else :
-            self.sw(tokens[1], int16(parseint(tokens[2])), int16(parseint(tokens[3])))
+            tokens[3] = $(self.getRegister(tokens[3]))
+
+        self.sw(tokens[1], int16(parseint(tokens[2])), int16(parseint(tokens[3])))
     of "sb" :
+        if (tokens[2][0] == '$') :
+            tokens[2] = $(self.getRegister(tokens[2]))
+
         if (tokens[3][0] == '$') :
-            self.sb(tokens[1], int16(parseint(tokens[2])), self.getRegister(tokens[3]))
-        else :
-            self.sb(tokens[1], int16(parseint(tokens[2])), int16(parseint(tokens[3])))
+            tokens[3] = $(self.getRegister(tokens[3]))
+
+        self.sb(tokens[1], int16(parseint(tokens[2])), int16(parseint(tokens[3])))
     of "syscall" :
         return self.syscall()
     else :
