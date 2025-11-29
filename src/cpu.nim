@@ -390,6 +390,7 @@ proc execCurrentInstruction*(self: var CPU): int =
 
         self.lb(tokens[1], int16(parseint(tokens[2])), int16(parseint(tokens[3])))
     of "sw" :
+        # echo tokens
         if (tokens[2][0] == '$') :
             tokens[2] = $(self.getRegister(tokens[2]))
 

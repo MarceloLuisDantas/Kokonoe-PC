@@ -1,36 +1,37 @@
 .text
     j *_main
 
-_print:
-    lrb $t0, 0($t0)
-    li $sc, 2 # print char
+_printa:
+    li $t1, -1
+    li $sc, 1
+
+    loop_p:
+        lb $t0, -1($sp)
+        beq $t0, $t1, *end_p
+        syscall
+        dec $sp
+        j *loop_p
+    end_p:
+
+    li $t0, 10
+    li $sc, 2
     syscall
-    return    
+
+    return
 
 _multiplo_de_2:
-    li $t1, 0
+    li $t1, 2
+    while_m2:
+        # if t0 < 2; goto end_m2
+        blt $t0, $t1, *end_m2
+            subi $t0, $t0, 2
+        j *while_m2
+    end_m2:    
 
-    # while (num >= 2)
-    loop_m2:     
-        # if (num == 0); goto is_m2
-        beq $t0, $t1, *is_m2
-        inc $t1 # t1 = 1
-
-        # if (num == 1); goto no_m2
-        beq $t0, $t1, *no_m2
-        dec $t1 # t1 = 0
-
-        # t0 -= 2
-        subi $t0, $t0, 2
-    j *loop_m2
-
-    is_m2:
-        la $t0, *zero
-        j *_print
-
-    no_m2:
-        la $t0, *um
-        j *_print
+    inc $sp
+    sb $t0, -1($sp)
+    
+    return
 
 _main:
     lrw $t5, 0(*num)
@@ -38,32 +39,25 @@ _main:
     # 16 bits
     li $t3, 16
 
-    # while ($t3 != 0)
-    loop_bin:
-        li $t4, 1
+    addi $sp, $sp, 1
+    li $t0, -1
+    sb $t0, -1($sp)
+    
+    while_bits:
+        # if t3 == zero, goto end_bits
+        beq $t3, $zero, *end_bits
+            move $t0, $t5
+            jal *_multiplo_de_2
+            dec $t3
+            srl $t5, $t5, 1            
+        j *while_bits
+    end_bits:
 
-        # if (bits < 16); goto end_bin
-        beq $t3, $zero, *end_bin
-        dec $t3
-
-        move $t0, $t5
-        jal *_multiplo_de_2
-        srl $t5, $t5, 1
-
-        j *loop_bin
-    end_bin:
-
-    # New line
-    li $t0, 10
-    li $sc, 2
-    syscall
+    jal *_printa
 
     # Exit
     li $sc, 0
     syscall
 
 .data
-     num: .int16 32767
-
-      um: .string "1"
-    zero: .string "0"
+     num: .int16 534
