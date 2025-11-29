@@ -12,7 +12,7 @@ const INSTRUCTIONS* = [
     "or", "ori", "and", "andi", "sll", "srl", "slt", "slti", "li", "syscall",
     "j", "jr", "jal", "beq", "bne", "bgt", "bge", "blt", "ble", "return",
     "lw", "lb", "sw", "sb", "lv", "sv", "lrw", "lrb", "inc", "dec",
-    ".text", ".data", "la"
+    ".text", ".data", "la", "rand"
 ]
 
 const THREE_REGISTERS_INS* = [
@@ -49,6 +49,7 @@ const SECTIONS* = [
 
 const LI = "li"
 const LA = "la"
+const RAND = "rand"
 
 const RETURN = "return"
 const SYSCALL = "syscall"
@@ -363,6 +364,22 @@ proc parse_la(self: var Parser): (seq[string], bool) =
 
     return (instruction, true)
 
+proc parse_rand(self: var Parser): (seq[string], bool) = 
+    var instruction: seq[string] = @["INSTRUCTION", "rand"]
+    var tk: Token = self.peek()
+    
+    if (tk.tokenType != REGISTER) or (not (tk.value in REGISTERS)) :
+        echo tk.value, " - registrador invalido. Linha: ", tk.line
+        return (@[], false)
+    instruction.add(tk.value)
+
+    tk = self.get(self.position + 1)
+    if (tk.tokenType != NEW_LINE and tk.tokenType != COMMENT) :
+        echo "'rand' recebe apenas 1 parametro. Linha: ", tk.line
+        return (@[], false)
+
+    return (instruction, true)
+
 proc parse_return(self: var Parser): (seq[string], bool) = 
     var instruction: seq[string] = @["INSTRUCTION", "return"]
     var tk: Token = self.peek()
@@ -456,6 +473,13 @@ proc parse_instruction*(self: var Parser, token: Token): (seq[string], bool) =
 
     elif (upcode in INCDEC) :
         let (ins, ok) = parse_inc_dec(self, upcode)
+        if not ok :
+            echo "Erro na linha: ", token.line
+        else :
+            return (ins, true)
+
+    elif (upcode == RAND) :
+        let (ins, ok) = parse_rand(self)
         if not ok :
             echo "Erro na linha: ", token.line
         else :

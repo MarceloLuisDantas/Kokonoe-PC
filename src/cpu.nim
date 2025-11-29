@@ -1,4 +1,5 @@
 import strutils
+import random
 import rom
 import ram
 
@@ -22,8 +23,10 @@ type CPU* = object
     ir*:    string
     rom*:   ROM
     ram*:   RAM
+    random: Rand
 
 proc newCPU*(program: seq[seq[string]]): CPU =
+    result.random = initRand()
     result.ram = newRam()
     result.rom = newRom()
     var gp: int = result.rom.loadProgram(program)
@@ -291,6 +294,9 @@ proc kinc(self: var CPU, dest: REGS) =
 proc kdec(self: var CPU, dest: REGS) =
     self.setRegister(dest, self.getRegister(dest) - 1)
 
+proc rand(self: var CPU, dest: REGS) =
+    self.setRegister(dest, int16(self.random.rand(-32768..32767)))
+
 proc getNextInstruction*(self: var CPU): int =
     if (self.pc == self.gp) :
         return 1
@@ -406,6 +412,8 @@ proc execCurrentInstruction*(self: var CPU): int =
             tokens[3] = $(self.getRegister(tokens[3]))
 
         self.sb(tokens[1], int16(parseint(tokens[2])), int16(parseint(tokens[3])))
+    of "rand" :
+        self.rand(tokens[1])
     of "syscall" :
         return self.syscall()
     else :
