@@ -110,8 +110,11 @@ func newParser(tokens []Token) *Parser {
 	return &p
 }
 
-func (parser *Parser) getCurrentToken() Token {
-	return parser.Tokens[parser.Position]
+func (parser *Parser) getCurrentToken() (Token, error) {
+	if parser.Position >= len(parser.Tokens) {
+		return Token{}, fmt.Errorf("end of file")
+	}
+	return parser.Tokens[parser.Position], nil
 }
 
 func (parser *Parser) getNextXToken(x int) Token {
@@ -119,6 +122,7 @@ func (parser *Parser) getNextXToken(x int) Token {
 }
 
 func invalidRegister(token Token) error {
+	println("valor:", token.Value)
 	fmt.Printf("Registrador esperado em - linha: %d coluna: %d, mas foi encontrado %s.\n",
 		token.Line, token.Column, token.TokenType)
 	return fmt.Errorf("invalid reg")
@@ -165,7 +169,8 @@ func closeParenMissing(line, column int) error {
 // add, addu, subu, sub, mult, div, or, and, slt
 // add $r1, $r2, $r2 \n
 func (parser *Parser) parseRegisterInstruciton() error {
-	ins := Instruction{parser.getCurrentToken().Value}
+	current_token, _ := parser.getCurrentToken()
+	ins := Instruction{current_token.Value}
 
 	arg1 := parser.getNextXToken(1)
 	if arg1.TokenType != REGISTER {
@@ -194,7 +199,7 @@ func (parser *Parser) parseRegisterInstruciton() error {
 
 	nl := parser.getNextXToken(6)
 	if nl.TokenType != NEW_LINE {
-		return toMuchArgs(parser.getCurrentToken(), 3)
+		return toMuchArgs(current_token, 3)
 	}
 
 	ins = append(ins, arg1.Value)
@@ -209,7 +214,8 @@ func (parser *Parser) parseRegisterInstruciton() error {
 // addi, addui, subi, subui, multi, divi, ori, andi, slti, sll, srl
 // addi $r1, $r2, value \n
 func (parser *Parser) parseImediateInstruciton() error {
-	ins := Instruction{parser.getCurrentToken().Value}
+	current_token, _ := parser.getCurrentToken()
+	ins := Instruction{current_token.Value}
 
 	arg1 := parser.getNextXToken(1)
 	if arg1.TokenType != REGISTER {
@@ -238,7 +244,7 @@ func (parser *Parser) parseImediateInstruciton() error {
 
 	nl := parser.getNextXToken(6)
 	if nl.TokenType != NEW_LINE {
-		return toMuchArgs(parser.getCurrentToken(), 3)
+		return toMuchArgs(current_token, 3)
 	}
 
 	ins = append(ins, arg1.Value)
@@ -252,14 +258,15 @@ func (parser *Parser) parseImediateInstruciton() error {
 
 // j, jr, jal
 func (parser *Parser) parseJump() error {
-	ins := Instruction{parser.getCurrentToken().Value}
+	current_token, _ := parser.getCurrentToken()
+	ins := Instruction{current_token.Value}
 
 	arg := parser.getNextXToken(1)
-	if parser.getCurrentToken().Value == "j" || parser.getCurrentToken().Value == "jal" {
+	if current_token.Value == "j" || current_token.Value == "jal" {
 		if arg.TokenType != LABEL_REF {
 			return invalidLabel(arg)
 		}
-	} else if parser.getCurrentToken().Value == "jr" {
+	} else if current_token.Value == "jr" {
 		if arg.TokenType != REGISTER {
 			return invalidRegister(arg)
 		}
@@ -267,7 +274,7 @@ func (parser *Parser) parseJump() error {
 
 	nl := parser.getNextXToken(2)
 	if nl.TokenType != NEW_LINE {
-		return toMuchArgs(parser.getCurrentToken(), 1)
+		return toMuchArgs(current_token, 1)
 	}
 
 	ins = append(ins, arg.Value)
@@ -279,7 +286,8 @@ func (parser *Parser) parseJump() error {
 
 // beq, bne, bgt, bge, blt, ble
 func (parser *Parser) parseBranch() error {
-	ins := Instruction{parser.getCurrentToken().Value}
+	current_token, _ := parser.getCurrentToken()
+	ins := Instruction{current_token.Value}
 
 	arg1 := parser.getNextXToken(1)
 	if arg1.TokenType != REGISTER {
@@ -308,7 +316,7 @@ func (parser *Parser) parseBranch() error {
 
 	nl := parser.getNextXToken(6)
 	if nl.TokenType != NEW_LINE {
-		return toMuchArgs(parser.getCurrentToken(), 3)
+		return toMuchArgs(current_token, 3)
 	}
 
 	ins = append(ins, arg1.Value)
@@ -325,7 +333,8 @@ func (parser *Parser) parseBranch() error {
 // lw $r1, 0($r2)
 // lw $r1, $r2($r3)
 func (parser *Parser) parseMemorie() error {
-	ins := Instruction{parser.getCurrentToken().Value}
+	current_token, _ := parser.getCurrentToken()
+	ins := Instruction{current_token.Value}
 
 	arg1 := parser.getNextXToken(1)
 	if arg1.TokenType != REGISTER {
@@ -348,7 +357,7 @@ func (parser *Parser) parseMemorie() error {
 	}
 
 	arg2 := parser.getNextXToken(5)
-	if arg2.TokenType != REGISTER {
+	if arg2.TokenType != REGISTER && arg2.TokenType != LABEL_REF {
 		return invalidRegister(arg2)
 	}
 
@@ -359,7 +368,7 @@ func (parser *Parser) parseMemorie() error {
 
 	nl := parser.getNextXToken(7)
 	if nl.TokenType != NEW_LINE {
-		return toMuchArgs(parser.getCurrentToken(), 3)
+		return toMuchArgs(current_token, 3)
 	}
 
 	ins = append(ins, arg1.Value)
@@ -373,7 +382,8 @@ func (parser *Parser) parseMemorie() error {
 
 // inc, dec
 func (parser *Parser) parseIncDec() error {
-	ins := Instruction{parser.getCurrentToken().Value}
+	current_token, _ := parser.getCurrentToken()
+	ins := Instruction{current_token.Value}
 
 	arg := parser.getNextXToken(1)
 	if arg.TokenType != REGISTER {
@@ -382,7 +392,7 @@ func (parser *Parser) parseIncDec() error {
 
 	nl := parser.getNextXToken(2)
 	if nl.TokenType != NEW_LINE {
-		return toMuchArgs(parser.getCurrentToken(), 1)
+		return toMuchArgs(current_token, 1)
 	}
 
 	ins = append(ins, arg.Value)
@@ -394,11 +404,12 @@ func (parser *Parser) parseIncDec() error {
 
 // Syscall, Return
 func (parser *Parser) parseSyscallReturn() error {
-	ins := Instruction{parser.getCurrentToken().Value}
+	current_token, _ := parser.getCurrentToken()
+	ins := Instruction{current_token.Value}
 
 	nl := parser.getNextXToken(1)
 	if nl.TokenType != NEW_LINE {
-		return toMuchArgs(parser.getCurrentToken(), 1)
+		return toMuchArgs(current_token, 1)
 	}
 
 	parser.Instructions = append(parser.Instructions, ins)
@@ -408,7 +419,8 @@ func (parser *Parser) parseSyscallReturn() error {
 }
 
 func (parser *Parser) parseMove() error {
-	ins := Instruction{parser.getCurrentToken().Value}
+	current_token, _ := parser.getCurrentToken()
+	ins := Instruction{current_token.Value}
 
 	arg1 := parser.getNextXToken(1)
 	if arg1.TokenType != REGISTER {
@@ -427,7 +439,8 @@ func (parser *Parser) parseMove() error {
 
 	nl := parser.getNextXToken(4)
 	if nl.TokenType != NEW_LINE {
-		return toMuchArgs(parser.getCurrentToken(), 1)
+		return toMuchArgs(current_token, 1)
+
 	}
 
 	ins = append(ins, arg1.Value)
@@ -439,7 +452,8 @@ func (parser *Parser) parseMove() error {
 }
 
 func (parser *Parser) parseLi() error {
-	ins := Instruction{parser.getCurrentToken().Value}
+	current_token, _ := parser.getCurrentToken()
+	ins := Instruction{current_token.Value}
 
 	arg1 := parser.getNextXToken(1)
 	if arg1.TokenType != REGISTER {
@@ -458,7 +472,7 @@ func (parser *Parser) parseLi() error {
 
 	nl := parser.getNextXToken(4)
 	if nl.TokenType != NEW_LINE {
-		return toMuchArgs(parser.getCurrentToken(), 1)
+		return toMuchArgs(current_token, 1)
 	}
 
 	ins = append(ins, arg1.Value)
@@ -470,7 +484,8 @@ func (parser *Parser) parseLi() error {
 }
 
 func (parser *Parser) parseLa() error {
-	ins := Instruction{parser.getCurrentToken().Value}
+	current_token, _ := parser.getCurrentToken()
+	ins := Instruction{current_token.Value}
 
 	arg1 := parser.getNextXToken(1)
 	if arg1.TokenType != REGISTER {
@@ -489,7 +504,7 @@ func (parser *Parser) parseLa() error {
 
 	nl := parser.getNextXToken(4)
 	if nl.TokenType != NEW_LINE {
-		return toMuchArgs(parser.getCurrentToken(), 1)
+		return toMuchArgs(current_token, 1)
 	}
 
 	ins = append(ins, arg1.Value)
@@ -501,7 +516,8 @@ func (parser *Parser) parseLa() error {
 }
 
 func (parser *Parser) parseRand() error {
-	ins := Instruction{parser.getCurrentToken().Value}
+	current_token, _ := parser.getCurrentToken()
+	ins := Instruction{current_token.Value}
 
 	arg1 := parser.getNextXToken(1)
 	if arg1.TokenType != REGISTER {
@@ -510,7 +526,7 @@ func (parser *Parser) parseRand() error {
 
 	nl := parser.getNextXToken(2)
 	if nl.TokenType != NEW_LINE {
-		return toMuchArgs(parser.getCurrentToken(), 1)
+		return toMuchArgs(current_token, 1)
 	}
 
 	ins = append(ins, arg1.Value)
@@ -521,17 +537,18 @@ func (parser *Parser) parseRand() error {
 }
 
 func (parser *Parser) parseJumpLabelDef() error {
-	parser.JumpLabels[parser.getCurrentToken().Value] = parser.Len
+	current_token, _ := parser.getCurrentToken()
+	parser.JumpLabels[current_token.Value] = parser.Len
 	parser.Position += 1
 	return nil
 }
 
 func (parser *Parser) parseStrings() error {
-	current := parser.getCurrentToken()
+	current, err := parser.getCurrentToken()
 	label := current.Value
 	parser.RomLabels[label] = parser.Len
 	parser.Position += 1
-	current = parser.getCurrentToken()
+	current, _ = parser.getCurrentToken()
 
 	// fmt.Println(current)
 	ins := Instruction{"STR"}
@@ -570,7 +587,10 @@ func (parser *Parser) parseStrings() error {
 
 		// fmt.Printf("-%s-", str)
 		parser.Position += 1
-		current = parser.getCurrentToken()
+		current, err = parser.getCurrentToken()
+		if err != nil {
+			panic(err)
+		}
 	}
 	ins = append(ins, str)
 	parser.Instructions = append(parser.Instructions, ins)
@@ -598,12 +618,16 @@ func ConvertWithOverflowAny(value string, t string) (string, error) {
 }
 
 func (parser *Parser) parseInt(t string) error {
-	current := parser.getCurrentToken()
+	current, err := parser.getCurrentToken()
 	parser.RomLabels[current.Value] = parser.Len
 	parser.Position += 1
 
 	total := 0
-	current = parser.getCurrentToken()
+	current, err = parser.getCurrentToken()
+	if err != nil {
+		panic(err)
+	}
+
 	ins := Instruction{strings.ToUpper(t)}
 	for current.TokenType != NEW_LINE {
 		num, err := ConvertWithOverflowAny(current.Value, t)
@@ -613,7 +637,10 @@ func (parser *Parser) parseInt(t string) error {
 
 		ins = append(ins, num)
 		parser.Position += 1
-		current = parser.getCurrentToken()
+		current, err = parser.getCurrentToken()
+		if err != nil {
+			panic(err)
+		}
 		total += 1
 	}
 
@@ -629,7 +656,12 @@ func (parser *Parser) parseInt(t string) error {
 }
 
 func (parser *Parser) Parse() []Instruction {
-	currentToken := parser.getCurrentToken()
+	currentToken, err := parser.getCurrentToken()
+	if err != nil {
+		println(err.Error())
+		return nil
+	}
+
 	if (currentToken.TokenType != SECTION) && (currentToken.Value != ".text") {
 		println("Seção de text deve ser devinida no começo do arquivo")
 		return nil
@@ -649,7 +681,7 @@ func (parser *Parser) Parse() []Instruction {
 
 	parser.Position += 2
 	for parser.Position < len(parser.Tokens) {
-		currentToken = parser.getCurrentToken()
+		currentToken, err = parser.getCurrentToken()
 		// fmt.Println(currentToken)
 
 		if !validos[currentToken.TokenType] {

@@ -1,0 +1,133 @@
+j
+88 
+la
+$t3 109 
+lrb
+$t4 0 108 
+beq
+$t4 $zero 42 
+la
+$t1 108 
+li
+$sc 2 
+lrb
+$t0 0 $t1 
+beq
+$t0 $zero 24 
+sys
+call
+inc
+$t1 
+dec
+$t2 
+j
+12 
+lrw
+$t0 0 $t3 
+li
+$sc 1 
+sys
+call
+li
+$t0 10 
+li
+$sc 2 
+sys
+call
+addi
+$t3 $t3 2 
+dec
+$t4 
+j
+6 
+ret
+urn
+la
+$t3 109 
+lrb
+$t4 0 108 
+move
+$t5 $t4 
+beq
+$t4 $zero 62 
+lrw
+$t0 0 $t3 
+add
+$rt $rt $t0 
+addi
+$t3 $t3 2 
+dec
+$t4 
+j
+50 
+div
+$rt $rt $t5 
+ret
+urn
+la
+$t1 108 
+li
+$sc 2 
+lrb
+$t0 0 $t1 
+beq
+$t0 $zero 80 
+sys
+call
+inc
+$t1 
+j
+70 
+move
+$t0 $t5 
+li
+$sc 1 
+sys
+call
+ret
+urn
+li
+$sc 1 
+jal
+2 
+jal
+44 
+move
+$t5 $rt 
+jal
+66 
+li
+$t0 10 
+li
+$sc 2 
+sys
+call
+li
+$sc 0 
+sys
+call
+32
+110
+111
+116
+97
+58
+32
+0
+109
+101
+100
+105
+97
+58
+32
+0
+4
+0
+104
+0
+223
+0
+32
+0
+91

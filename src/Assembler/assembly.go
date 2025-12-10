@@ -7,18 +7,6 @@ import (
 	"strings"
 )
 
-func check(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
-func load_file(file_name string) string {
-	data, err := os.ReadFile(file_name)
-	check(err)
-	return string(data)
-}
-
 func replaceLabelsRef(ins []Instruction, parser *Parser) error {
 	for i, value := range ins {
 		var label = ""
@@ -115,18 +103,12 @@ func exportFile(instructions []Instruction, file_name string) error {
 	return nil
 }
 
-func Assembler() {
-	if len(os.Args) < 2 {
-		fmt.Println("Arquivo não dado")
-		os.Exit(0)
-	}
-
-	file_name := os.Args[1]
-	data := load_file(file_name)
+func Assembler(data, file_name string) {
 
 	tk := newTokenizer(data)
 	err := tk.Tokenize()
 	if err != nil {
+		println("Erro ao tokenizar")
 		return
 	}
 	println("Tokenizer: OK")
@@ -135,12 +117,14 @@ func Assembler() {
 	instructions := parser.Parse()
 	if instructions == nil {
 		println("Erro ao realisar parser")
+		return
 	}
 	println("Parser: OK")
 
 	err = replaceLabelsRef(instructions, parser)
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 	fmt.Println("Assembler: OK")
 

@@ -1,0 +1,68 @@
+j
+38 
+li
+$t1 -1 
+li
+$sc 1 
+lb
+$t0 -1 $sp 
+beq
+$t0 $t1 16 
+sys
+call
+dec
+$sp 
+j
+6 
+li
+$t0 10 
+li
+$sc 2 
+sys
+call
+ret
+urn
+li
+$t1 2 
+blt
+$t0 $t1 32 
+subi
+$t0 $t0 2 
+j
+26 
+inc
+$sp 
+sb
+$t0 -1 $sp 
+ret
+urn
+lrw
+$t5 0 66 
+li
+$t3 16 
+addi
+$sp $sp 1 
+li
+$t0 -1 
+sb
+$t0 -1 $sp 
+beq
+$t3 $zero 60 
+move
+$t0 $t5 
+jal
+24 
+dec
+$t3 
+srl
+$t5 $t5 1 
+j
+48 
+jal
+2 
+li
+$sc 0 
+sys
+call
+2
+22

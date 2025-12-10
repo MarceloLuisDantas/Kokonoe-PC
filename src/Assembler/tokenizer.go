@@ -89,7 +89,7 @@ func newTokenizer(data string) *Tokenizer {
 }
 
 func (tokenizer *Tokenizer) addToken(token_type TokenType, value string) {
-	token := newToken(token_type, value, tokenizer.line, tokenizer.column)
+	token := newToken(token_type, value, tokenizer.line+1, tokenizer.column+1)
 	tokenizer.tokens = append(tokenizer.tokens, *token)
 	tokenizer.len += 1
 }
@@ -204,7 +204,7 @@ func (tokenizer *Tokenizer) handleLabelRef() error {
 	tokenizer.advance() // Pula o *
 	start := tokenizer.position
 
-	for tokenizer.getCurrentChar() != ' ' && tokenizer.getCurrentChar() != '\n' {
+	for tokenizer.getCurrentChar() != ' ' && tokenizer.getCurrentChar() != '\n' && tokenizer.getCurrentChar() != ')' {
 		if !isValidCharacterToIdentifier(tokenizer.getCurrentChar()) {
 			fmt.Printf("%c\n", tokenizer.getCurrentChar())
 			return fmt.Errorf("Character invalido ao referenciar label. Linha %d Coluna %d", tokenizer.line+1, tokenizer.column+1)
