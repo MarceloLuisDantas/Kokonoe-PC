@@ -2,14 +2,26 @@
 ## add - (Addition) `add $r1 $r2 $r3` => `r1 = r2 + r3`
 Soma os valores de r2 e r3, e salva o resultado em r1
 
+## addu - (Addition) `add $r1 $r2 $r3` => `r1 = r2 + r3`
+Soma os valores de r2 e r3, e salva o resultado em r1, interpreta os valores como unsigned
+
 ## addi - (Addition Immediate) `addi $r1 $r2 x` => `r1 = r2 + x`
 Soma os valores de r2 e x, e salva o resultado em r1
+
+## addiu - (Addition Immediate) `addi $r1 $r2 x` => `r1 = r2 + x`
+Soma os valores de r2 e x, e salva o resultado em r1, interpreta os valores como unsigned
 
 ## sub - (Subtraction) `sub $r1 $r2 $r3` => `r1 = r2 - r3`
 Subtrai r3 de r2, e salva o resultado em r1
 
+## subu - (Subtraction) `sub $r1 $r2 $r3` => `r1 = r2 - r3`
+Subtrai r3 de r2, e salva o resultado em r1, interpreta os valores como unsigned
+
 ## subi - (Subtraction Immediate) `subi $r1 $r2 x` => `r1 = r2 - x`
 Subtrai  de r2, e salva o resultado em r1
+
+## subiu - (Subtraction Immediate) `subi $r1 $r2 x` => `r1 = r2 - x`
+Subtrai  de r2, e salva o resultado em r1, interpreta os valores como unsigned
 
 ## mult - (Multplication) `mult $r1 $r2 $r3` => `r1 = r2 * r3`
 Multiplica r2 por r3 e salva o resultado em r1
@@ -36,6 +48,7 @@ Salva o endereço de memoria de um valor em r1
 
 ## dec - (Decrementa) `dec $r1` => `r1--`
 
+## rand - (Random number) `rand $r1` => `r1 = rand()`
 
 # Instruções Logicas
 ## or - (Or) `or $r1 $r2 $r3` => `r1 = r2 or r3`
@@ -96,18 +109,28 @@ Seta o PC para o endereço salvo em $ra salvo por `jal`
 # Instruções de Data Transfer
 ## lw - (Load World) `lw $r1 [offset][address/register]` => `r1 = *address`
 Carrega uma world (2 bytes) da RAM e salva em r1
+### lw $t0, 0($sp)
+### lw $t0, $t1($sp)
 
 ## lb - (Load Byte) `lb $r1 [offset][address/register]` => `r1 = *address`
 Carrega 1 byte da RAM e salva em r1
+### lb $t0, 0($sp)
+### lb $t0, $t1($sp)
 
 ## sw - (Save World) `sw $r1 [offset][address/register]` => `*address = r1`
 Salva o valor de r1 na memoria, escreve 2 bytes
+### sw $t0, 0($sp)
+### sw $t0, $t1($sp)
 
 ## sb - (Save Byte) `sb $r1 [offset][address/register]` => `*address = r1`
 Salva o valor de r1 na memoria, escreve 1 byte
+### sb $t0, 0($sp)
+### sb $t0, $t1($sp)
 
 ## lv - (Load from VRAM) `lv $r1 [offset][vram_address/register]` => `r1 = *vram_address`
 Carregar um pixel da VRAM para r1
+### lv $t0, 0($sp)
+### lv $t0, $t1($sp)
 
 ## sv - (Save to VRAM) `sv $r1 [offset][vram_address/register]` => `*vram_address = r1`
 Salva o pixel em r1 no endereço na VRAM

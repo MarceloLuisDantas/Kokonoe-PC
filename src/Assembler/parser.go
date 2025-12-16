@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	NOP     string = "nop"
 	ADD     string = "add"
 	ADDI    string = "addi"
 	ADDU    string = "addu"
@@ -100,13 +101,13 @@ type Parser struct {
 	Instructions []Instruction
 	Position     int
 	Len          int
+	Gp           int
 	JumpLabels   map[string]int
 	RomLabels    map[string]int
-	Gp           int
 }
 
 func newParser(tokens []Token) *Parser {
-	p := Parser{tokens, []Instruction{}, 0, 0, make(map[string]int), make(map[string]int), 0}
+	p := Parser{tokens, []Instruction{}, 0, 0, -1, make(map[string]int), make(map[string]int)}
 	return &p
 }
 
@@ -655,16 +656,16 @@ func (parser *Parser) parseInt(t string) error {
 	return nil
 }
 
-func (parser *Parser) Parse() []Instruction {
+func (parser *Parser) Parse() ([]Instruction, int) {
 	currentToken, err := parser.getCurrentToken()
 	if err != nil {
 		println(err.Error())
-		return nil
+		return nil, -1
 	}
 
 	if (currentToken.TokenType != SECTION) && (currentToken.Value != ".text") {
 		println("Seção de text deve ser devinida no começo do arquivo")
-		return nil
+		return nil, -1
 	}
 
 	validos := map[TokenType]bool{
@@ -687,7 +688,7 @@ func (parser *Parser) Parse() []Instruction {
 		if !validos[currentToken.TokenType] {
 			fmt.Printf("Valor inesperado na linha: %d coluna: %d, %s.\n",
 				currentToken.Line, currentToken.Column, currentToken.TokenType)
-			return nil
+			return nil, -1
 		}
 
 		var err error = nil
@@ -737,9 +738,9 @@ func (parser *Parser) Parse() []Instruction {
 
 		if err != nil {
 			fmt.Println(err)
-			return nil
+			return nil, -1
 		}
 	}
 
-	return parser.Instructions
+	return parser.Instructions, parser.Gp
 }

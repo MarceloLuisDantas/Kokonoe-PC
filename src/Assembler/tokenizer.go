@@ -22,6 +22,7 @@ var KEY_WORDS = map[string]bool{
 	"lrw": true, "lrb": true,
 	"inc": true, "dec": true,
 	"syscall": true, "return": true, "rand": true,
+	"nop": true,
 }
 
 var SECTIONS = map[string]bool{
@@ -36,7 +37,7 @@ var TYPES = map[string]bool{
 
 var REGISTRERS = map[string]bool{
 	"$zero": true, "$t0": true, "$t1": true, "$t2": true, "$t3": true, "$t4": true, "$t5": true,
-	"$rt": true, "$gp": true, "$sp": true, "$fp": true, "$sc": true, "$ra": true, "$pc": true, "$ir": true,
+	"$rt": true, "$sp": true, "$fp": true, "$sc": true, "$ra": true, "$pc": true, "$ir": true, "gp": true,
 }
 
 type TokenType string

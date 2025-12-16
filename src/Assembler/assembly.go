@@ -53,12 +53,14 @@ func replaceLabelsRef(ins []Instruction, parser *Parser) error {
 	return nil
 }
 
-func exportFile(instructions []Instruction, file_name string) error {
+func exportFile(instructions []Instruction, file_name string, gp int) error {
 	file, err := os.Create(file_name)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
+
+	fmt.Fprintf(file, fmt.Sprintf("%d\n", gp))
 
 	for _, ins := range instructions {
 		switch ins[0] {
@@ -85,7 +87,7 @@ func exportFile(instructions []Instruction, file_name string) error {
 				fmt.Fprintf(file, fmt.Sprintf("%d\n", msb))
 				fmt.Fprintf(file, fmt.Sprintf("%d\n", lsb))
 			}
-		case "syscall", "return", "rand":
+		case "syscall", "return":
 			fmt.Fprintln(file, ins[0][0:3])
 			fmt.Fprintln(file, ins[0][3:])
 
@@ -114,7 +116,7 @@ func Assembler(data, file_name string) {
 	println("Tokenizer: OK")
 
 	parser := newParser(tk.tokens)
-	instructions := parser.Parse()
+	instructions, gp := parser.Parse()
 	if instructions == nil {
 		println("Erro ao realisar parser")
 		return
@@ -130,7 +132,7 @@ func Assembler(data, file_name string) {
 
 	final_name := strings.Split(file_name, ".")[0]
 	final_name += ".krom"
-	err = exportFile(instructions, final_name)
+	err = exportFile(instructions, final_name, gp)
 	if err != nil {
 		println(err)
 	} else {
