@@ -5,6 +5,8 @@ import (
 	"math/rand"
 	"os"
 	"strconv"
+	"strings"
+	"time"
 )
 
 type CPU struct {
@@ -218,6 +220,22 @@ func (cpu *CPU) Slti(dest, src string, value int16) {
 	}
 }
 
+func (cpu *CPU) Sltu(dest, src1, src2 string) {
+	if cpu.GetRegister(src1) < cpu.GetRegister(src2) {
+		cpu.SetRegister(dest, 1)
+	} else {
+		cpu.SetRegister(dest, 0)
+	}
+}
+
+func (cpu *CPU) Sltui(dest, src string, value uint16) {
+	if uint16(cpu.GetRegister(src)) < value {
+		cpu.SetRegister(dest, 1)
+	} else {
+		cpu.SetRegister(dest, 0)
+	}
+}
+
 func (cpu *CPU) Move(dest, src string) {
 	cpu.SetRegister(dest, cpu.GetRegister(src))
 }
@@ -226,8 +244,8 @@ func (cpu *CPU) Li(dest string, value int16) {
 	cpu.SetRegister(dest, value)
 }
 
-func (cpu *CPU) La(dest string, value int16) {
-	cpu.SetRegister(dest, value)
+func (cpu *CPU) La(dest string, value uint16) {
+	cpu.SetRegister(dest, int16(value))
 }
 
 func (cpu *CPU) Jump(point uint16) {
@@ -353,6 +371,19 @@ func (cpu *CPU) Syscall() {
 		print(uint8(value))
 	case 5:
 		fmt.Printf("%c", int8(value))
+
+	// SYSCALLS para testar o computador
+	case 1001:
+		println(value)
+	case 1002:
+		println(uint16(value))
+	case 1003:
+		println(int8(value))
+	case 1004:
+		println(uint8(value))
+	case 1005:
+		fmt.Printf("%c\n", int8(value))
+
 	}
 }
 
@@ -387,20 +418,6 @@ func (cpu *CPU) ExecCurrentInstruction(tokens []string) int {
 		v, _ := strconv.Atoi(tokens[3])
 		cpu.Divi(tokens[1], tokens[2], int16(v))
 
-	case "addu":
-		cpu.Addu(tokens[1], tokens[2], tokens[3])
-
-	case "addiu":
-		v, _ := strconv.Atoi(tokens[3])
-		cpu.Addui(tokens[1], tokens[2], int16(v))
-
-	case "subu":
-		cpu.Subu(tokens[1], tokens[2], tokens[3])
-
-	case "subiu":
-		v, _ := strconv.Atoi(tokens[3])
-		cpu.Subui(tokens[1], tokens[2], int16(v))
-
 	case "move":
 		cpu.Move(tokens[1], tokens[2])
 
@@ -410,7 +427,7 @@ func (cpu *CPU) ExecCurrentInstruction(tokens []string) int {
 
 	case "la":
 		v, _ := strconv.Atoi(tokens[2])
-		cpu.La(tokens[1], int16(v))
+		cpu.La(tokens[1], uint16(v))
 
 	case "j":
 		v, _ := strconv.Atoi(tokens[1])
@@ -456,6 +473,13 @@ func (cpu *CPU) ExecCurrentInstruction(tokens []string) int {
 	case "slti":
 		v, _ := strconv.Atoi(tokens[3])
 		cpu.Slti(tokens[1], tokens[2], int16(v))
+
+	case "sltu":
+		cpu.Sltu(tokens[1], tokens[2], tokens[3])
+
+	case "sltui":
+		v, _ := strconv.Atoi(tokens[3])
+		cpu.Sltui(tokens[1], tokens[2], uint16(v))
 
 	case "and":
 		cpu.And(tokens[1], tokens[2], tokens[3])
@@ -522,4 +546,36 @@ func (cpu *CPU) ExecCurrentInstruction(tokens []string) int {
 	}
 
 	return 0
+}
+
+func (cpu *CPU) CarryNextInstruction() {
+	h1 := cpu.rom.rom[cpu.pc]
+	h2 := cpu.rom.rom[cpu.pc+1]
+	if h1 == "sys" || h1 == "ret" {
+		cpu.ir = h1 + h2
+	} else {
+		cpu.ir = h1 + " " + h2
+	}
+}
+
+func (cpu *CPU) Run() {
+	for {
+		cpu.CarryNextInstruction()
+		cpu.ExecCurrentInstruction(strings.Split(cpu.ir, " "))
+		// fmt.Println(cpu.ir)
+		cpu.pc += 2
+		if cpu.pc >= cpu.gp {
+			return
+		}
+		time.Sleep(100000000)
+	}
+}
+
+func (cpu *CPU) ShowRom() {
+	for i, v := range cpu.rom.rom {
+		fmt.Printf("%d -> %s\n", i, v)
+		if i == 150 {
+			return
+		}
+	}
 }

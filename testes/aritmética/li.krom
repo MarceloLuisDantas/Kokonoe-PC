@@ -1,0 +1,23 @@
+-1
+li
+$t0 32767 
+li
+$sc 1001 
+sys
+call
+li
+$t0 -32768 
+sys
+call
+li
+$t0 -1 
+sys
+call
+li
+$sc 1002 
+sys
+call
+li
+$sc 0 
+sys
+call

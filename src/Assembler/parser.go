@@ -10,12 +10,8 @@ const (
 	NOP     string = "nop"
 	ADD     string = "add"
 	ADDI    string = "addi"
-	ADDU    string = "addu"
-	ADDUI   string = "addui"
 	SUB     string = "sub"
 	SUBI    string = "subi"
-	SUBU    string = "subu"
-	SUBUI   string = "subui"
 	MULT    string = "mult"
 	MULTI   string = "multi"
 	DIV     string = "div"
@@ -28,6 +24,8 @@ const (
 	SRL     string = "srl"
 	SLT     string = "slt"
 	SLTI    string = "slti"
+	SLTU    string = "sltu"
+	SLTUI   string = "sltui"
 	LI      string = "li"
 	LA      string = "la"
 	MOVE    string = "move"
@@ -56,13 +54,14 @@ const (
 )
 
 var RegistersInstructions = map[string]bool{
-	ADD: true, ADDU: true, SUB: true, SUBU: true,
-	MULT: true, DIV: true, OR: true, AND: true, SLT: true,
+	ADD: true, SUB: true, MULT: true, DIV: true,
+	OR: true, AND: true, SLT: true, SLTU: true,
 }
 
 var ImmediateInstructions = map[string]bool{
-	ADDI: true, ADDUI: true, SUBI: true, SUBUI: true, MULTI: true, DIVI: true,
-	ORI: true, ANDI: true, SLTI: true, SLL: true, SRL: true,
+	ADDI: true, SUBI: true, MULTI: true, DIVI: true,
+	ORI: true, ANDI: true, SLTI: true, SLTUI: true,
+	SLL: true, SRL: true,
 }
 
 var BranchInstructions = map[string]bool{
@@ -123,7 +122,6 @@ func (parser *Parser) getNextXToken(x int) Token {
 }
 
 func invalidRegister(token Token) error {
-	println("valor:", token.Value)
 	fmt.Printf("Registrador esperado em - linha: %d coluna: %d, mas foi encontrado %s.\n",
 		token.Line, token.Column, token.TokenType)
 	return fmt.Errorf("invalid reg")
@@ -167,7 +165,7 @@ func closeParenMissing(line, column int) error {
 	return fmt.Errorf("missing separator")
 }
 
-// add, addu, subu, sub, mult, div, or, and, slt
+// add, sub, mult, div, or, and, slt, slt
 // add $r1, $r2, $r2 \n
 func (parser *Parser) parseRegisterInstruciton() error {
 	current_token, _ := parser.getCurrentToken()
@@ -212,7 +210,7 @@ func (parser *Parser) parseRegisterInstruciton() error {
 	return nil
 }
 
-// addi, addui, subi, subui, multi, divi, ori, andi, slti, sll, srl
+// addi, subi, multi, divi, ori, andi, slti, sltui, sll, srl
 // addi $r1, $r2, value \n
 func (parser *Parser) parseImediateInstruciton() error {
 	current_token, _ := parser.getCurrentToken()
@@ -263,11 +261,12 @@ func (parser *Parser) parseJump() error {
 	ins := Instruction{current_token.Value}
 
 	arg := parser.getNextXToken(1)
-	if current_token.Value == "j" || current_token.Value == "jal" {
+	switch current_token.Value {
+	case "j", "jal":
 		if arg.TokenType != LABEL_REF {
 			return invalidLabel(arg)
 		}
-	} else if current_token.Value == "jr" {
+	case "jr":
 		if arg.TokenType != REGISTER {
 			return invalidRegister(arg)
 		}
@@ -547,7 +546,7 @@ func (parser *Parser) parseJumpLabelDef() error {
 func (parser *Parser) parseStrings() error {
 	current, err := parser.getCurrentToken()
 	label := current.Value
-	parser.RomLabels[label] = parser.Len
+	parser.RomLabels[label] = parser.Len - parser.Gp
 	parser.Position += 1
 	current, _ = parser.getCurrentToken()
 
@@ -620,7 +619,7 @@ func ConvertWithOverflowAny(value string, t string) (string, error) {
 
 func (parser *Parser) parseInt(t string) error {
 	current, err := parser.getCurrentToken()
-	parser.RomLabels[current.Value] = parser.Len
+	parser.RomLabels[current.Value] = parser.Len - parser.Gp
 	parser.Position += 1
 
 	total := 0

@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	assembler "kokonoe/src/Assembler"
+	pc "kokonoe/src/PC"
 	"os"
+	"strings"
 )
 
 func load_file(file_name string) string {
@@ -28,12 +30,20 @@ func main() {
 
 	file_name := os.Args[2]
 	data := load_file(file_name)
-	if option == "as" {
+	switch option {
+	case "as":
 		if data[len(data)-1] != '\n' {
 			data += "\n"
 		}
 		assembler.Assembler(data, file_name)
-	} else {
+	case "run":
+		cpu, err := pc.NewCPU(strings.Split(data, "\n"))
+		if err != nil {
+			println(err.Error())
+			return
+		}
 
+		// cpu.ShowRom()
+		cpu.Run()
 	}
 }

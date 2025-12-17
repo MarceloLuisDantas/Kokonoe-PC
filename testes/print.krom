@@ -1,0 +1,15 @@
+-1
+li
+$t0 10 
+li
+$sc 1 
+sys
+call
+li
+$sc 5 
+sys
+call
+li
+$sc 0 
+sys
+call

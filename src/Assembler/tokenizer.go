@@ -6,12 +6,11 @@ import (
 )
 
 var KEY_WORDS = map[string]bool{
-	"add": true, "addi": true, "addu": true, "addui": true,
-	"sub": true, "subi": true, "subu": true, "subui": true,
+	"add": true, "addi": true, "sub": true, "subi": true,
 	"mult": true, "multi": true, "div": true, "divi": true,
 	"or": true, "ori": true, "and": true, "andi": true,
+	"slt": true, "slti": true, "sltu": true, "sltui": true,
 	"sll": true, "srl": true,
-	"slt": true, "slti": true,
 	"li": true, "la": true, "move": true,
 	"j": true, "jr": true, "jal": true,
 	"beq": true, "bne": true, "bgt": true,
@@ -301,12 +300,12 @@ func (tokenizer *Tokenizer) handleNumber() error {
 	}
 	num := tokenizer.Data[start:tokenizer.position]
 
-	_, err := strconv.Atoi(num)
+	value, err := strconv.Atoi(num)
 	if err != nil {
 		return fmt.Errorf("Valor invalido ao definir numero. Linha %d, Coluna %d", tokenizer.line+1, tokenizer.column+1)
 	}
 
-	tokenizer.addToken(NUMBER, num)
+	tokenizer.addToken(NUMBER, strconv.Itoa(int(int16(value))))
 	return nil
 }
 

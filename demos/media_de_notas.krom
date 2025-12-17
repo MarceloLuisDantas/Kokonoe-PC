@@ -2,13 +2,13 @@
 j
 88 
 la
-$t3 109 
+$t3 1 
 lrb
-$t4 0 108 
+$t4 0 0 
 beq
 $t4 $zero 42 
 la
-$t1 108 
+$t1 0 
 li
 $sc 2 
 lrb
@@ -44,9 +44,9 @@ j
 ret
 urn
 la
-$t3 109 
+$t3 1 
 lrb
-$t4 0 108 
+$t4 0 0 
 move
 $t5 $t4 
 beq
@@ -66,7 +66,7 @@ $rt $rt $t5
 ret
 urn
 la
-$t1 108 
+$t1 0 
 li
 $sc 2 
 lrb
