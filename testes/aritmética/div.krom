@@ -1,0 +1,35 @@
+-1
+li
+$sc 1001 
+li
+$t0 100 
+li
+$t1 2 
+div
+$t0 $t0 $t1 
+sys
+call
+li
+$t1 -2 
+mult
+$t0 $t0 $t1 
+sys
+call
+li
+$t0 -2 
+divi
+$t0 $t0 2 
+sys
+call
+li
+$sc 1002 
+sys
+call
+li
+$t0 1000 
+divi
+$t0 $t0 0 
+li
+$sc 0 
+sys
+call

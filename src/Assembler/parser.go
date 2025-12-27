@@ -122,8 +122,8 @@ func (parser *Parser) getNextXToken(x int) Token {
 }
 
 func invalidRegister(token Token) error {
-	fmt.Printf("Registrador esperado em - linha: %d coluna: %d, mas foi encontrado %s.\n",
-		token.Line, token.Column, token.TokenType)
+	fmt.Printf("Registrador esperado em - linha: %d coluna: %d, mas foi encontrado %s \"%s\".\n",
+		token.Line, token.Column, token.TokenType, token.Value)
 	return fmt.Errorf("invalid reg")
 }
 
@@ -547,6 +547,7 @@ func (parser *Parser) parseStrings() error {
 	current, err := parser.getCurrentToken()
 	label := current.Value
 	parser.RomLabels[label] = parser.Len - parser.Gp
+	// println(parser.Len - parser.Gp)
 	parser.Position += 1
 	current, _ = parser.getCurrentToken()
 
@@ -593,6 +594,7 @@ func (parser *Parser) parseStrings() error {
 		}
 	}
 	ins = append(ins, str)
+	parser.Len += len(str)
 	parser.Instructions = append(parser.Instructions, ins)
 	return nil
 }
@@ -607,6 +609,7 @@ func ConvertWithOverflowAny(value string, t string) (string, error) {
 	case "int8":
 		return strconv.Itoa(int(int8(num))), nil
 	case "uint8":
+		// println(int(uint8(num)))
 		return strconv.Itoa(int(uint8(num))), nil
 	case "int16":
 		return strconv.Itoa(int(int16(num))), nil

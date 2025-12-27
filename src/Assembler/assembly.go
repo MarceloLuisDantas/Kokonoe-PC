@@ -63,6 +63,7 @@ func exportFile(instructions []Instruction, file_name string, gp int) error {
 	fmt.Fprintf(file, fmt.Sprintf("%d\n", gp))
 
 	for _, ins := range instructions {
+
 		switch ins[0] {
 		case "STR":
 			value := ins[1]
@@ -73,15 +74,15 @@ func exportFile(instructions []Instruction, file_name string, gp int) error {
 		case "INT8", "UINT8":
 			values := ins[1:]
 			for _, v := range values {
-				numi64, _ := strconv.ParseInt(v, 10, 64)
-				fmt.Fprintf(file, fmt.Sprintf("%d\n", uint8(numi64)))
+				value, _ := strconv.ParseInt(v, 10, 16)
+				fmt.Fprintf(file, fmt.Sprintf("%d\n", uint8(value)))
 			}
 
 		case "INT16", "UINT16":
 			values := ins[1:]
 			for _, v := range values {
-				numi64, _ := strconv.ParseInt(v, 10, 64)
-				numui16 := uint16(numi64)
+				value, _ := strconv.ParseInt(v, 10, 32)
+				numui16 := uint16(value)
 				lsb := uint8(numui16)
 				msb := uint8(numui16 >> 8)
 				fmt.Fprintf(file, fmt.Sprintf("%d\n", msb))

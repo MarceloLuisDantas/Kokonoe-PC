@@ -2,7 +2,7 @@
     j *_main
 
 _print_lyric:
-    li $sc, 2
+    li $sc, 5
     while_pl1:
         lrb $t0, 0($t2)
         beq $t0, $zero, *end_pl1

@@ -1,0 +1,13 @@
+-1
+j
+2 
+li
+$sc 1001 
+li
+$t0 0 
+inc
+$t0 
+sys
+call
+j
+6 

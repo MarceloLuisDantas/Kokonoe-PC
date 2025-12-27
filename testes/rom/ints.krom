@@ -1,0 +1,70 @@
+52
+li
+$sc 1001 
+lrb
+$t0 0 0 
+sys
+call
+li
+$sc 1002 
+lrb
+$t0 0 1 
+sys
+call
+lrw
+$t0 0 2 
+li
+$sc 1003 
+sys
+call
+lrw
+$t0 0 4 
+li
+$sc 1004 
+sys
+call
+li
+$sc 1001 
+lrb
+$t0 0 2 
+sys
+call
+lrb
+$t0 1 2 
+sys
+call
+li
+$sc 1002 
+li
+$t1 0 
+lrb
+$t2 0 8 
+lrb
+$t0 $t1 9 
+sys
+call
+inc
+$t1 
+bne
+$t1 $t2 40 
+li
+$sc 0 
+sys
+call
+136
+255
+205
+78
+205
+78
+205
+78
+8
+0
+1
+2
+3
+4
+5
+6
+7

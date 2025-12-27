@@ -1,7 +1,8 @@
+94
 j
 16 
 li
-$sc 2 
+$sc 5 
 lrb
 $t0 0 $t2 
 beq
@@ -29,11 +30,11 @@ $t4 1
 ble
 $t5 $t4 34 
 la
-$t2 94 
+$t2 0 
 j
 36 
 la
-$t2 94 
+$t2 234 
 jal
 2 
 move
@@ -45,15 +46,15 @@ call
 beq
 $t5 $t4 50 
 la
-$t2 94 
+$t2 32 
 j
 52 
 la
-$t2 94 
+$t2 265 
 jal
 2 
 la
-$t2 94 
+$t2 52 
 jal
 2 
 dec
@@ -67,11 +68,11 @@ call
 ble
 $t5 $t4 72 
 la
-$t2 94 
+$t2 0 
 j
 74 
 la
-$t2 94 
+$t2 234 
 jal
 2 
 li
@@ -81,11 +82,11 @@ call
 j
 18 
 la
-$t2 94 
+$t2 99 
 jal
 2 
 la
-$t2 94 
+$t2 163 
 jal
 2 
 li

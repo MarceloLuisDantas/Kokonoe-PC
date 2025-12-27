@@ -6,7 +6,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type CPU struct {
@@ -26,7 +25,7 @@ type CPU struct {
 	gp   uint16
 	ir   string
 	rom  *ROM
-	// ram  RAM
+	ram  *RAM
 }
 
 func NewCPU(file []string) (*CPU, error) {
@@ -42,8 +41,9 @@ func NewCPU(file []string) (*CPU, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	cpu.rom = rom
+
+	cpu.ram = NewRam()
 	return &cpu, nil
 }
 
@@ -336,7 +336,8 @@ func (cpu *CPU) Lrw(dest string, offset, point uint16) {
 		panic(err)
 	}
 
-	value := int16(h1) | int16(h2)
+	value := (int16(h1) << 8) | int16(h2)
+	// print(value)
 	cpu.SetRegister(dest, value)
 }
 
@@ -350,11 +351,35 @@ func (cpu *CPU) Srl(dest, src string, value uint16) {
 	cpu.SetRegister(dest, int16(v>>value))
 }
 
+func (cpu *CPU) Sb(src string, offset int16, reg_index string) {
+	value := uint8(cpu.GetRegister(src))
+	index := int32(cpu.GetRegister(reg_index)) + int32(offset)
+	cpu.ram.save_byte(value, uint16(index))
+}
+
+func (cpu *CPU) Sw(src string, offset int16, reg_index string) {
+	value := uint16(cpu.GetRegister(src))
+	index := int32(cpu.GetRegister(reg_index)) + int32(offset)
+	cpu.ram.save_world(value, uint16(index))
+}
+
+func (cpu *CPU) Lb(dest string, offset int16, reg_index string) {
+	index := int32(cpu.GetRegister(reg_index)) + int32(offset)
+	value := cpu.ram.load_byte(uint16(index))
+	cpu.SetRegister(dest, int16(value))
+}
+
+func (cpu *CPU) Lw(dest string, offset int16, reg_index string) {
+	index := int32(cpu.GetRegister(reg_index)) + int32(offset)
+	value := cpu.ram.load_world(uint16(index))
+	cpu.SetRegister(dest, int16(value))
+}
+
 // 0 - exit
-// 1 - print t0 como int16
-// 2 - print t0 como uint16
-// 3 - print t0 como int8
-// 4 - print t0 como utin16
+// 1 - print t0 como int8
+// 2 - print t0 como utin8
+// 3 - print t0 como int16
+// 4 - print t0 como uint16
 // 5 - print t0 como char utf8
 func (cpu *CPU) Syscall() {
 	value := cpu.t0
@@ -362,25 +387,25 @@ func (cpu *CPU) Syscall() {
 	case 0:
 		os.Exit(0)
 	case 1:
-		print(value)
-	case 2:
-		print(uint16(value))
-	case 3:
 		print(int8(value))
-	case 4:
+	case 2:
 		print(uint8(value))
+	case 3:
+		print(value)
+	case 4:
+		print(uint16(value))
 	case 5:
 		fmt.Printf("%c", int8(value))
 
 	// SYSCALLS para testar o computador
 	case 1001:
-		println(value)
-	case 1002:
-		println(uint16(value))
-	case 1003:
 		println(int8(value))
-	case 1004:
+	case 1002:
 		println(uint8(value))
+	case 1003:
+		println(value)
+	case 1004:
+		println(uint16(value))
 	case 1005:
 		fmt.Printf("%c\n", int8(value))
 
@@ -538,10 +563,27 @@ func (cpu *CPU) ExecCurrentInstruction(tokens []string) int {
 			cpu.Lrw(tokens[1], uint16(offset), uint16(point))
 		}
 
+	case "sb":
+		offset, _ := strconv.Atoi(tokens[2])
+		cpu.Sb(tokens[1], int16(offset), tokens[3])
+
+	case "sw":
+		offset, _ := strconv.Atoi(tokens[2])
+		cpu.Sw(tokens[1], int16(offset), tokens[3])
+
+	case "lb":
+		offset, _ := strconv.Atoi(tokens[2])
+		cpu.Lw(tokens[1], int16(offset), tokens[3])
+
+	case "lw":
+		offset, _ := strconv.Atoi(tokens[2])
+		cpu.Lw(tokens[1], int16(offset), tokens[3])
+
 	case "syscall":
 		cpu.Syscall()
 
 	default:
+		fmt.Printf("Instrução invalida \"%s\".\n", tokens[0])
 		return -2
 	}
 
@@ -556,18 +598,21 @@ func (cpu *CPU) CarryNextInstruction() {
 	} else {
 		cpu.ir = h1 + " " + h2
 	}
+	cpu.pc += 2
 }
 
 func (cpu *CPU) Run() {
 	for {
 		cpu.CarryNextInstruction()
-		cpu.ExecCurrentInstruction(strings.Split(cpu.ir, " "))
-		// fmt.Println(cpu.ir)
-		cpu.pc += 2
+		ok := cpu.ExecCurrentInstruction(strings.Split(cpu.ir, " "))
+		if ok != 0 {
+			return
+		}
+
 		if cpu.pc >= cpu.gp {
 			return
 		}
-		time.Sleep(100000000)
+		// time.Sleep(10000000)
 	}
 }
 

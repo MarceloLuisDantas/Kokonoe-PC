@@ -4,17 +4,21 @@ $sc 1001
 li
 $t0 100 
 li
-$t1 200 
-add
+$t1 2 
+mult
+$t0 $t0 $t1 
+sys
+call
+li
+$t1 -2 
+mult
 $t0 $t0 $t1 
 sys
 call
 li
 $t0 32767 
-sys
-call
-addi
-$t0 $t0 1 
+multi
+$t0 $t0 2 
 sys
 call
 li
@@ -24,15 +28,15 @@ call
 li
 $sc 1001 
 li
-$t0 -32768 
-sys
-call
-addi
-$t0 $t0 -1 
+$t0 10000 
+multi
+$t0 $t0 0 
 sys
 call
 li
-$sc 100 
+$sc 1002 
+sys
+call
 li
 $sc 0 
 sys
