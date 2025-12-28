@@ -1,93 +1,118 @@
 .text
     j *_main
 
-_print_notas:    
-    la $t3, *notas
-    lrb $t4, 0(*quantas)
+_print_ln:
+    li $t0, 10
+    li $sc, 5
+    syscall
 
-    loop_pn:
-        beq $t4, $zero, *end_pn        
-        la $t1, *s_notas
-        li $sc, 2
-        loop_ps:
-            lrb $t0, 0($t1)
-            beq $t0, $zero, *end_ps
-            syscall
-            inc $t1
-            dec $t2
-            j *loop_ps
-        end_ps:
+    return
 
-        lrw $t0, 0($t3)
-        li $sc, 1
+# Printa a string com endereço salvo em t0
+_print_string:
+    li $sc, 5 # print ascii
+
+    # t1 = t0
+    move $t2, $t0
+    
+    # while t0 != '\0' {
+    while_str:
+        lrb $t0, 0($t2)
         syscall
-
-        li $t0, 10
-        li $sc, 2
-        syscall
-
-        addi $t3, $t3, 2
-        dec $t4
-
-        j *loop_pn
-    end_pn:
+        inc $t2        
+    bne $t0, $zero, *while_str
     
     return
 
-_calc_media:
-    la $t3, *notas
-    lrb $t4, 0(*quantas)
-    move $t5, $t4
+# Printa os 4 valores da lista salva em $t0
+_print_notas:
+    # push ra
+    addi $sp, $sp, 2
+    sw $ra, -2($sp)
 
-    loop_cm:
-        beq $t4, $zero, *end_cm
+    move $t1, $t0
 
-        lrw $t0, 0($t3)
-        add $rt, $rt, $t0
-        addi $t3, $t3, 2
-        dec $t4
+    li $t3, 4
+    # While t3 != 0
+    while_notas:
+        la $t0, *s_notas
+        jal *_print_string
+
+        lrw $t0, 0($t1)
+        li $sc, 3
+        syscall
         
-        j *loop_cm
-    end_cm:
+        addi $t1, $t1, 2 # t1++
+        dec $t3          # t3--
+        
+        jal *_print_ln
+    bne $t3, $zero, *while_notas
 
-    div $rt, $rt, $t5
+    # pop ra
+    lw $ra, -2($sp)
+    addi $sp, $sp, -2
+
     return
 
-_print_media:    
-    la $t1, *s_media
 
-    li $sc, 2
-    loop_pm:
-        lrb $t0, 0($t1)
-        beq $t0, $zero, *end_pm
-        syscall
-        inc $t1
-        j *loop_pm
-    end_pm:
+# Soma os 4 valores da lista salva em t0, e calcula a media
+_calc_media:
+    move $t1, $t0
 
-    move $t0, $t5
-    li $sc, 1
+    li $t2, 4
+    while_media:
+        lrw $t0, 0($t1)
+        add $rt, $rt, $t0
+        addi $t1, $t1, 2
+        dec $t2
+    bne $t2, $zero, *while_media
+
+    divi $rt, $rt, 4
+    return
+
+# Printa as notas e a media da lista salva em t0
+_calc_and_print:
+    addi $sp, $sp, 4
+    sw $ra, -4($sp) # push ra
+    sw $t0, -2($sp) # push t0
+
+    lw $t0, -2($sp)
+    jal *_print_notas
+
+    la $t0, *s_media
+    jal *_print_string
+
+    # pop t0
+    lw $t0, -2($sp)
+    addi $sp, $sp, -2
+
+    jal *_calc_media
+
+    move $t0, $rt
+    li $sc, 3
     syscall
+    jal *_print_ln
+
+    # pop ra
+    lw $ra, -2($sp)
+    addi $sp, $sp, -2
     return
 
 _main:
-    li $sc, 1
+    la $t0, *notas_1
+    jal *_calc_and_print
 
-    jal *_print_notas
-    jal *_calc_media
-    move $t5, $rt
-    jal *_print_media
+    jal *_print_ln
+
+    la $t0, *notas_2
+    jal *_calc_and_print
     
-    # printa new line
-    li $t0, 10
-    li $sc, 2
-    syscall
-
+    # exit
     li $sc, 0
     syscall
 
 .data
     s_notas:    .string     " nota: \0"
     s_media:    .string     "media: \0"
-    quantas:    .int8       4
-    notas:      .int16      104 223 32 91
+    notas_1:    .int16      104 223 32 91
+    notas_2:    .int16      231 112 45 63

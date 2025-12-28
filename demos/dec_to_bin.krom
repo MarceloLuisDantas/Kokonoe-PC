@@ -1,42 +1,22 @@
-98
+54
 j
-70 
-addi
-$sp $sp 4 
-sw
-$t0 -4 $sp 
-sw
-$sc -2 $sp 
-li
-$t0 10 
-li
-$sc 5 
-sys
-call
-lw
-$sc -2 $sp 
-lw
-$t0 -4 $sp 
-subi
-$sp $sp 4 
-ret
-urn
-li
-$t1 16 
+34 
 li
 $sc 1 
+li
+$t1 16 
 beq
-$t1 $zero 38 
-lw
+$t1 $zero 18 
+lb
 $t0 -1 $sp 
-dec
-$sp 
 sys
 call
+dec
+$sp 
 dec
 $t1 
 j
-26 
+6 
 li
 $t0 10 
 li
@@ -45,54 +25,30 @@ sys
 call
 ret
 urn
-addi
-$sp $sp 2 
-sw
-$t0 -2 $sp 
-li
-$t1 2 
-blt
-$t0 $t1 58 
-subi
-$t0 $t0 2 
-j
-52 
-move
-$rt $t0 
-lw
-$t0 -2 $sp 
-li
-$sc 1003 
-sys
-call
-addi
-$sp $sp -2 
+andi
+$t2 $t0 1 
+inc
+$sp 
+sb
+$t2 -1 $sp 
 ret
 urn
 lrw
 $t0 0 0 
 li
-$t5 16 
+$t1 16 
+beq
+$t1 $zero 48 
 jal
-46 
-inc
-$sp 
-sb
-$rt -1 $sp 
+26 
 srl
 $t0 $t0 1 
-li
-$sc 1003 
-sys
-call
-beq
-$t5 $zero 92 
 dec
-$t5 
+$t1 
 j
-74 
+38 
 jal
-22 
+2 
 li
 $sc 0 
 sys

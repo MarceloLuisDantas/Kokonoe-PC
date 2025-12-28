@@ -111,7 +111,9 @@ func (cpu *CPU) GetRegister(dest string) int16 {
 	case "$rt":
 		return cpu.rt
 	}
-	panic("registrador inválido")
+
+	println("registrador inválido: ", dest)
+	panic("")
 }
 
 func (cpu *CPU) Add(dest, src1, src2 string) {
@@ -272,6 +274,7 @@ func (cpu *CPU) Beq(src1, src2 string, point uint16) {
 }
 
 func (cpu *CPU) Bne(src1, src2 string, point uint16) {
+	// println(cpu.GetRegister(src1), " == ", cpu.GetRegister(src2))
 	if cpu.GetRegister(src1) != cpu.GetRegister(src2) {
 		cpu.pc = point
 	}
@@ -409,6 +412,8 @@ func (cpu *CPU) Syscall() {
 	case 1005:
 		fmt.Printf("%c\n", int8(value))
 
+	case -1:
+		cpu.ram.show_ram()
 	}
 }
 
@@ -573,7 +578,7 @@ func (cpu *CPU) ExecCurrentInstruction(tokens []string) int {
 
 	case "lb":
 		offset, _ := strconv.Atoi(tokens[2])
-		cpu.Lw(tokens[1], int16(offset), tokens[3])
+		cpu.Lb(tokens[1], int16(offset), tokens[3])
 
 	case "lw":
 		offset, _ := strconv.Atoi(tokens[2])

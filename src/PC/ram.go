@@ -33,3 +33,9 @@ func (ram *RAM) load_world(index uint16) uint16 {
 	full_value = full_value | uint16(half_2)
 	return full_value
 }
+
+func (ram *RAM) show_ram() {
+	for i, v := range ram.ram {
+		println(i, ": ", v)
+	}
+}
