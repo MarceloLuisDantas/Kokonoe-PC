@@ -24,9 +24,9 @@ $t0 $zero 14
 ret
 urn
 addi
-$sp $sp 2 
+$sp $sp -2 
 sw
-$ra -2 $sp 
+$ra 2 $sp 
 move
 $t1 $t0 
 li
@@ -50,9 +50,9 @@ jal
 bne
 $t3 $zero 32 
 lw
-$ra -2 $sp 
+$ra 2 $sp 
 addi
-$sp $sp -2 
+$sp $sp 2 
 ret
 urn
 move
@@ -74,13 +74,13 @@ $rt $rt 4
 ret
 urn
 addi
-$sp $sp 4 
+$sp $sp -4 
 sw
-$ra -4 $sp 
+$ra 4 $sp 
 sw
-$t0 -2 $sp 
+$t0 2 $sp 
 lw
-$t0 -2 $sp 
+$t0 2 $sp 
 jal
 24 
 la
@@ -88,9 +88,9 @@ $t0 8
 jal
 10 
 lw
-$t0 -2 $sp 
+$t0 2 $sp 
 addi
-$sp $sp -2 
+$sp $sp 2 
 jal
 56 
 move
@@ -102,9 +102,9 @@ call
 jal
 2 
 lw
-$ra -2 $sp 
+$ra 2 $sp 
 addi
-$sp $sp -2 
+$sp $sp 2 
 ret
 urn
 la

@@ -17,9 +17,9 @@ type CPU struct {
 	t4   int16
 	t5   int16
 	rt   int16
-	sp   int16
-	fp   int16
 	sc   int16
+	sp   uint16
+	fp   uint16
 	ra   uint16
 	pc   uint16
 	gp   uint16
@@ -44,6 +44,8 @@ func NewCPU(file []string) (*CPU, error) {
 	cpu.rom = rom
 
 	cpu.ram = NewRam()
+	cpu.sp = 65535
+	cpu.fp = 65535
 	return &cpu, nil
 }
 
@@ -66,9 +68,9 @@ func (cpu *CPU) SetRegister(dest string, value int16) {
 	case "$zero":
 		cpu.zero = 0
 	case "$sp":
-		cpu.sp = value
+		cpu.sp = uint16(value)
 	case "$fp":
-		cpu.fp = value
+		cpu.fp = uint16(value)
 	case "$sc":
 		cpu.sc = value
 	case "$ra":
@@ -99,9 +101,9 @@ func (cpu *CPU) GetRegister(dest string) int16 {
 	case "$zero":
 		return 0
 	case "$sp":
-		return cpu.sp
+		return int16(cpu.sp)
 	case "$fp":
-		return cpu.fp
+		return int16(cpu.fp)
 	case "$sc":
 		return cpu.sc
 	case "$ra":

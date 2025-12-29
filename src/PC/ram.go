@@ -18,7 +18,7 @@ func (ram *RAM) save_world(value, index uint16) {
 	ram.ram[index] = uint8(value >> 8)
 
 	// 11111111[11111111]
-	ram.ram[index+1] = uint8(value)
+	ram.ram[index-1] = uint8(value)
 }
 
 func (ram *RAM) load_byte(index uint16) uint8 {
@@ -27,7 +27,7 @@ func (ram *RAM) load_byte(index uint16) uint8 {
 
 func (ram *RAM) load_world(index uint16) uint16 {
 	half_1 := ram.ram[index]
-	half_2 := ram.ram[index+1]
+	half_2 := ram.ram[index-1]
 
 	var full_value uint16 = uint16(half_1) << 8
 	full_value = full_value | uint16(half_2)

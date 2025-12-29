@@ -27,8 +27,8 @@ _print_string:
 # Printa os 4 valores da lista salva em $t0
 _print_notas:
     # push ra
-    addi $sp, $sp, 2
-    sw $ra, -2($sp)
+    addi $sp, $sp, -2
+    sw $ra, 2($sp)
 
     move $t1, $t0
 
@@ -49,8 +49,8 @@ _print_notas:
     bne $t3, $zero, *while_notas
 
     # pop ra
-    lw $ra, -2($sp)
-    addi $sp, $sp, -2
+    lw $ra, 2($sp)
+    addi $sp, $sp, 2
 
     return
 
@@ -72,19 +72,19 @@ _calc_media:
 
 # Printa as notas e a media da lista salva em t0
 _calc_and_print:
-    addi $sp, $sp, 4
-    sw $ra, -4($sp) # push ra
-    sw $t0, -2($sp) # push t0
+    addi $sp, $sp, -4
+    sw $ra, 4($sp) # push ra
+    sw $t0, 2($sp) # push t0
 
-    lw $t0, -2($sp)
+    lw $t0, 2($sp)
     jal *_print_notas
 
     la $t0, *s_media
     jal *_print_string
 
     # pop t0
-    lw $t0, -2($sp)
-    addi $sp, $sp, -2
+    lw $t0, 2($sp)
+    addi $sp, $sp, 2
 
     jal *_calc_media
 
@@ -94,8 +94,8 @@ _calc_and_print:
     jal *_print_ln
 
     # pop ra
-    lw $ra, -2($sp)
-    addi $sp, $sp, -2
+    lw $ra, 2($sp)
+    addi $sp, $sp, 2
     return
 
 _main:

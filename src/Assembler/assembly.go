@@ -60,7 +60,7 @@ func exportFile(instructions []Instruction, file_name string, gp int) error {
 	}
 	defer file.Close()
 
-	fmt.Fprintf(file, fmt.Sprintf("%d\n", gp))
+	fmt.Fprintf(file, "%s", fmt.Sprintf("%d\n", gp))
 
 	for _, ins := range instructions {
 
@@ -69,13 +69,13 @@ func exportFile(instructions []Instruction, file_name string, gp int) error {
 			value := ins[1]
 			// println(value[len(value)-1])
 			for _, char := range value {
-				fmt.Fprintf(file, fmt.Sprintf("%d\n", char))
+				fmt.Fprintf(file, "%s", fmt.Sprintf("%d\n", char))
 			}
 		case "INT8", "UINT8":
 			values := ins[1:]
 			for _, v := range values {
 				value, _ := strconv.ParseInt(v, 10, 16)
-				fmt.Fprintf(file, fmt.Sprintf("%d\n", uint8(value)))
+				fmt.Fprintf(file, "%s", fmt.Sprintf("%d\n", uint8(value)))
 			}
 
 		case "INT16", "UINT16":
@@ -85,19 +85,19 @@ func exportFile(instructions []Instruction, file_name string, gp int) error {
 				numui16 := uint16(value)
 				lsb := uint8(numui16)
 				msb := uint8(numui16 >> 8)
-				fmt.Fprintf(file, fmt.Sprintf("%d\n", msb))
-				fmt.Fprintf(file, fmt.Sprintf("%d\n", lsb))
+				fmt.Fprintf(file, "%s", fmt.Sprintf("%d\n", msb))
+				fmt.Fprintf(file, "%s", fmt.Sprintf("%d\n", lsb))
 			}
 		case "syscall", "return":
 			fmt.Fprintln(file, ins[0][0:3])
 			fmt.Fprintln(file, ins[0][3:])
 
 		default:
-			fmt.Fprintf(file, fmt.Sprintf("%s\n", ins[0]))
+			fmt.Fprintf(file, "%s", fmt.Sprintf("%s\n", ins[0]))
 
 			values := ins[1:]
 			for _, v := range values {
-				fmt.Fprintf(file, fmt.Sprintf("%s ", v))
+				fmt.Fprintf(file, "%s", fmt.Sprintf("%s ", v))
 			}
 			fmt.Fprintf(file, "\n")
 		}

@@ -8,9 +8,9 @@ _printa:
     while_printa:
         beq $t1, $zero, *end_printa
 
-        lb $t0, -1($sp)
+        lb $t0, 1($sp)
         syscall
-        dec $sp
+        inc $sp
 
         dec $t1
         j *while_printa
@@ -30,8 +30,8 @@ _resto_por_2:
     # t0 = 000000000000000x
     andi $t2, $t0, 1
 
-    inc $sp
-    sb $t2, -1($sp)
+    dec $sp
+    sb $t2, 1($sp)
 
     return    
 
