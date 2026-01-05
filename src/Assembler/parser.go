@@ -42,8 +42,8 @@ const (
 	LB      string = "lb"
 	SW      string = "sw"
 	SB      string = "sb"
-	LV      string = "lv"
-	SV      string = "sv"
+	LVR     string = "lvr"
+	SVR     string = "svr"
 	LRW     string = "lrw"
 	LRB     string = "lrb"
 	INC     string = "inc"
@@ -69,7 +69,7 @@ var BranchInstructions = map[string]bool{
 }
 
 var MemoriInstructions = map[string]bool{
-	LW: true, LB: true, SW: true, SB: true, LV: true, SV: true, LRW: true, LRB: true,
+	LW: true, LB: true, SW: true, SB: true, LVR: true, SVR: true, LRW: true, LRB: true,
 }
 
 var JumpInstructions = map[string]bool{

@@ -2,11 +2,34 @@ package pc
 
 import (
 	"fmt"
+	"image/color"
 	"math/rand"
 	"os"
 	"strconv"
 	"strings"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
 )
+
+const SCREAM_CHARS = 60
+const FONT_SIZE = 8
+const PADDING_BORDER = 4
+const PADDING_BETWEEN_LINES = 0
+const PADDING_BETWEEN_CHARS = 0
+const SCALING = 2
+const SCREAM_H = (SCREAM_CHARS * FONT_SIZE) + (PADDING_BETWEEN_LINES * SCREAM_CHARS) + PADDING_BORDER
+const SCREAM_W = (SCREAM_CHARS * FONT_SIZE) + (PADDING_BETWEEN_CHARS * SCREAM_CHARS) + PADDING_BORDER
+
+var cores = map[COLOR]color.RGBA{
+	BRANCO:   rl.White,
+	PRETO:    rl.Black,
+	AZUL:     rl.Blue,
+	VERMELHO: rl.Red,
+	VERDE:    rl.Green,
+	CINZA:    rl.Gray,
+	MARROM:   rl.Brown,
+	AMARELO:  rl.Yellow,
+}
 
 type CPU struct {
 	zero int16
@@ -26,6 +49,7 @@ type CPU struct {
 	ir   string
 	rom  *ROM
 	ram  *RAM
+	vram *VRAM
 }
 
 func NewCPU(file []string) (*CPU, error) {
@@ -44,6 +68,8 @@ func NewCPU(file []string) (*CPU, error) {
 	cpu.rom = rom
 
 	cpu.ram = NewRam()
+	cpu.vram = NewVram()
+
 	cpu.sp = 65535
 	cpu.fp = 65535
 	return &cpu, nil
@@ -380,12 +406,49 @@ func (cpu *CPU) Lw(dest string, offset int16, reg_index string) {
 	cpu.SetRegister(dest, int16(value))
 }
 
+func (cpu *CPU) Svr(src string, offset int16, reg_index string) {
+	value := uint16(cpu.GetRegister(src))
+	index := int32(cpu.GetRegister(reg_index)) + int32(offset)
+	y := index / 60
+	x := index % 60
+	cpu.vram.vram[y][x] = Character(value)
+}
+
+func (cpu *CPU) Lvr(dest string, offset int16, reg_index string) {
+	index := int32(cpu.GetRegister(reg_index)) + int32(offset)
+	y := index / 60
+	x := index % 60
+	cpu.SetRegister(dest, int16(cpu.vram.vram[y][x]))
+}
+
+func (cpu *CPU) RenderFrame() {
+	rl.ClearBackground(rl.Black)
+	rl.BeginDrawing()
+	var pos_y int32 = PADDING_BORDER * SCALING
+	for y := range 60 {
+		var pos_x int32 = PADDING_BORDER * SCALING
+		for x := range 60 {
+			_, char := cpu.vram.GetChar(x, y)
+			_, color := cpu.vram.GetCharColor(x, y)
+			_, bcolor := cpu.vram.GetCharBackColor(x, y)
+
+			rl.DrawRectangle(pos_x, pos_y, FONT_SIZE*SCALING, FONT_SIZE*SCALING, cores[bcolor])
+			rl.DrawText(string(char), pos_x, pos_y, FONT_SIZE*SCALING, cores[color])
+
+			pos_x += (FONT_SIZE + PADDING_BETWEEN_CHARS) * SCALING
+		}
+		pos_y += (FONT_SIZE + PADDING_BETWEEN_LINES) * SCALING
+	}
+	rl.EndDrawing()
+}
+
 // 0 - exit
 // 1 - print t0 como int8
 // 2 - print t0 como utin8
 // 3 - print t0 como int16
 // 4 - print t0 como uint16
 // 5 - print t0 como char utf8
+// 100 - render frame
 func (cpu *CPU) Syscall() {
 	value := cpu.t0
 	switch cpu.sc {
@@ -402,7 +465,9 @@ func (cpu *CPU) Syscall() {
 	case 5:
 		fmt.Printf("%c", int8(value))
 
-	// SYSCALLS para testar o computador
+	case 100:
+		cpu.RenderFrame()
+
 	case 1001:
 		println(int8(value))
 	case 1002:
@@ -570,6 +635,14 @@ func (cpu *CPU) ExecCurrentInstruction(tokens []string) int {
 			cpu.Lrw(tokens[1], uint16(offset), uint16(point))
 		}
 
+	case "lvr":
+		offset, _ := strconv.Atoi(tokens[2])
+		cpu.Lvr(tokens[1], int16(offset), tokens[3])
+
+	case "svr":
+		offset, _ := strconv.Atoi(tokens[2])
+		cpu.Svr(tokens[1], int16(offset), tokens[3])
+
 	case "sb":
 		offset, _ := strconv.Atoi(tokens[2])
 		cpu.Sb(tokens[1], int16(offset), tokens[3])
@@ -609,7 +682,12 @@ func (cpu *CPU) CarryNextInstruction() {
 }
 
 func (cpu *CPU) Run() {
-	for {
+	rl.InitWindow(SCREAM_W*SCALING, SCREAM_H*SCALING, "Teste raylib")
+	defer rl.CloseWindow()
+
+	rl.SetTargetFPS(60)
+
+	for !rl.WindowShouldClose() {
 		cpu.CarryNextInstruction()
 		ok := cpu.ExecCurrentInstruction(strings.Split(cpu.ir, " "))
 		if ok != 0 {
@@ -619,7 +697,6 @@ func (cpu *CPU) Run() {
 		if cpu.pc >= cpu.gp {
 			return
 		}
-		// time.Sleep(10000000)
 	}
 }
 

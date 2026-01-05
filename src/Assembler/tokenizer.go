@@ -17,7 +17,7 @@ var KEY_WORDS = map[string]bool{
 	"bge": true, "blt": true, "ble": true,
 	"lw": true, "lb": true,
 	"sw": true, "sb": true,
-	"lv": true, "sv": true,
+	"lvr": true, "svr": true,
 	"lrw": true, "lrb": true,
 	"inc": true, "dec": true,
 	"syscall": true, "return": true, "rand": true,

@@ -17,6 +17,7 @@ func load_file(file_name string) string {
 }
 
 func main() {
+
 	if len(os.Args) < 3 {
 		fmt.Println("uso: kokonoe [as/run] file.[asm/krom]")
 		os.Exit(0)

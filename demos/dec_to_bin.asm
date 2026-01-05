@@ -55,4 +55,4 @@ _main:
     syscall
 
 .data
-    num: .int16 531
+    num: .int16 24892
