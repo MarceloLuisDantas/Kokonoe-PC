@@ -111,7 +111,7 @@ func Assembler(data, file_name string) {
 	tk := newTokenizer(data)
 	err := tk.Tokenize()
 	if err != nil {
-		println("Erro ao tokenizar")
+		println("Erro ao tokenizar: ", err.Error())
 		return
 	}
 	println("Tokenizer: OK")

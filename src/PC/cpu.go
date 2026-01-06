@@ -12,13 +12,13 @@ import (
 )
 
 const SCREAM_CHARS = 60
-const FONT_SIZE = 8
+const FONT_SIZE = 6
 const PADDING_BORDER = 4
-const PADDING_BETWEEN_LINES = 0
-const PADDING_BETWEEN_CHARS = 0
+const PADDING_BETWEEN_LINES = 1
+const PADDING_BETWEEN_CHARS = 1
 const SCALING = 2
-const SCREAM_H = (SCREAM_CHARS * FONT_SIZE) + (PADDING_BETWEEN_LINES * SCREAM_CHARS) + PADDING_BORDER
-const SCREAM_W = (SCREAM_CHARS * FONT_SIZE) + (PADDING_BETWEEN_CHARS * SCREAM_CHARS) + PADDING_BORDER
+const SCREAM_H = (SCREAM_CHARS * FONT_SIZE) + (PADDING_BETWEEN_LINES * SCREAM_CHARS) + PADDING_BORDER*2
+const SCREAM_W = (SCREAM_CHARS * FONT_SIZE) + (PADDING_BETWEEN_CHARS * SCREAM_CHARS) + PADDING_BORDER*2
 
 var cores = map[COLOR]color.RGBA{
 	BRANCO:   rl.White,
@@ -636,11 +636,11 @@ func (cpu *CPU) ExecCurrentInstruction(tokens []string) int {
 		}
 
 	case "lvr":
-		offset, _ := strconv.Atoi(tokens[2])
+		offset := cpu.GetRegister(tokens[2])
 		cpu.Lvr(tokens[1], int16(offset), tokens[3])
 
 	case "svr":
-		offset, _ := strconv.Atoi(tokens[2])
+		offset := cpu.GetRegister(tokens[2])
 		cpu.Svr(tokens[1], int16(offset), tokens[3])
 
 	case "sb":
