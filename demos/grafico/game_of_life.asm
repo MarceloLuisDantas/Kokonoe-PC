@@ -1,14 +1,10 @@
 .text
+
     j *_main
 
+# retorna o modulo dos valore passados
 
-_mod:
-    lw $t0, 0($sp)
-    lw $t1, 2($sp)
-    return
-
-# Inicializa o tabuleiro
-_start:
+_inicializa_tabuleiro:
     addi $sp, $sp, -2
     sw $ra, 0($sp)
 
@@ -40,14 +36,27 @@ _start:
     lw $ra, 0($sp)
     addi $sp, $sp, -2
     return
+#
 
+_mod:
+    lw $t0, 0($zero) # mod
+    lw $t1, 2($zero) # num
 
-# _is_alive(addr) -> bool
+    loop:
+        sub $t1, $t1, $t0 # t1 -= t0 
+        blt $t1, $t0, *end # if t1 < t0; return
+        j *loop
+    end:
+
+    move $rt, $t1
+    return
+
+# verifica se a celula passada em ram[1] esta viva
 _is_alive:
-    lw $t0, 0($sp) # pop addr
-    # syscall
-    
-    #t0 = vram[addr]
+    # t0 = cell
+    lw $t0, 1($zero)
+
+    #t0 = vram[cell]
     lvr $t0, $t0($zero)
     # syscall
 
@@ -58,78 +67,51 @@ _is_alive:
     andi $t0, $t0, 15
 
     # t0 vai ser 1 (fundo branco/vivo) ou 0(fundo preto/morto)
-    move $rt, $t0
+    add $rt, $rt, $t0
     return
 
-# Calcula vizinhos vivos para celula superior esquerdo
-_cell_se:
+# Retorna quantos vizinhos vivos a celula em ram[0] possui
+
+_vizinhos_vivos:
+    addi $sp, $sp, -2
+    sw $ra, 0($sp) # push ra
+
     
-    return
 
-# Calcula vizinhos vivos para celula superior direito
-_cell_sd:
-    return
-
-# Calcula visinhos vivos para celula inferior esquerdo
-_cell_ie:
-    return
-
-# Calcula visinhos vivos para celula inferior direito
-_cell_id:
-    return
-
-# _get_number_of_alive_neighbors(y, x) -> int
-_get_number_of_alive_neighbors:
-    lw $t0, 0($sp) # pop y
-    lw $t1, 2($sp) # pop x
-    addi $sp, $sp, 4
-
-    multi $t0, $t0, 60 # y *= 60
-    add $t0, $t0, $t1  # y += x
-
-    # Celula é a do canto superior esquerdo
-    li $t1, 0
-    beq $t0, $zero, *_cell_se
-
-    # Celula é a do canto superior direito
-    li $t1, 59
-    beq $t0, $zero, *_cell_sd
-
-    # Celula é a do canto inferior esquerdo
-    li $t1, 3540
-    beq $t0, $zero, *_cell_ie
-
-    # Celula é a do canto inferior direito
-    li $t1, 3599
-    beq $t0, $zero, *_cell_id 
-
-
-
-
-
-_next_gen:
-    return
-
-
-_update_board:
+  
     return
 
 
 _main:
-    jal *_start
+    jal *_inicializa_tabuleiro
 
-    game_loop:
+    # percorre o tabuleiro
+    li $t4, 0
+    li $t5, 3600
 
+    loop_tabuleiro:
+        # t0 = _vizinhos_vivos(t4)
+        sw $t4, 0($zero) # ram[0] = t4
+        jal *_vizinhos_vivos
+        move $t0, $rt
 
+        # printa numero de vizinhos vivos
+        li $sc, 1004
+        li $t1, 10000
+        beq $t0, $t1, *nao_printa
+            syscall
+        nao_printa:
 
-        # Render
+        inc $t4 # t4 += 1
+
+        # if t4 == 3600; break
+        bne $t4, $t5, *loop_tabuleiro
+
+    loop_game:
+        
         li $sc, 100
         syscall
 
-        j *game_loop
+        j *loop_game
 
-
-    # Exit
-    li $sc, 0
-    syscall
-
+.data

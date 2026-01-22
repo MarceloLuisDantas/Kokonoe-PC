@@ -1,0 +1,65 @@
+56
+j
+16 
+lw
+$t0 0 $zero 
+lw
+$t1 2 $zero 
+sub
+$t1 $t1 $t0 
+blt
+$t1 $t0 12 
+j
+6 
+move
+$rt $t1 
+ret
+urn
+li
+$sc 1003 
+lrw
+$t0 0 6 
+sw
+$t0 0 $zero 
+lrw
+$t0 0 0 
+sw
+$t0 2 $zero 
+jal
+2 
+move
+$t0 $rt 
+sys
+call
+lrw
+$t0 0 2 
+sw
+$t0 2 $zero 
+jal
+2 
+move
+$t0 $rt 
+sys
+call
+lrw
+$t0 0 4 
+sw
+$t0 2 $zero 
+jal
+2 
+move
+$t0 $rt 
+sys
+call
+li
+$sc 0 
+sys
+call
+2
+23
+1
+1
+2
+88
+0
+3
