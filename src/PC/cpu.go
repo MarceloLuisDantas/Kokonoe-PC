@@ -636,11 +636,11 @@ func (cpu *CPU) ExecCurrentInstruction(tokens []string) int {
 		}
 
 	case "lvr":
-		offset := cpu.GetRegister(tokens[2])
+		offset, _ := strconv.Atoi(tokens[2])
 		cpu.Lvr(tokens[1], int16(offset), tokens[3])
 
 	case "svr":
-		offset := cpu.GetRegister(tokens[2])
+		offset, _ := strconv.Atoi(tokens[2])
 		cpu.Svr(tokens[1], int16(offset), tokens[3])
 
 	case "sb":

@@ -1,0 +1,113 @@
+-1
+j
+92 
+lw
+$t0 0 $sp 
+lw
+$t1 2 $sp 
+blt
+$t1 $t0 12 
+sub
+$t1 $t1 $t0 
+j
+6 
+move
+$rt $t1 
+ret
+urn
+lw
+$t1 0 $sp 
+addi
+$sp $sp 2 
+multi
+$t1 $t1 60 
+lw
+$t2 0 $sp 
+addi
+$sp $sp 2 
+add
+$t2 $t1 $t2 
+lw
+$t0 0 $sp 
+addi
+$sp $sp 2 
+li
+$t1 0 
+addi
+$sp $sp -2 
+sw
+$ra 0 $sp 
+addi
+$sp $sp -2 
+sw
+$zero 0 $sp 
+addi
+$sp $sp -4 
+li
+$t1 10 
+sw
+$t1 0 $sp 
+sw
+$t0 2 $sp 
+jal
+2 
+lw
+$t0 2 $sp 
+addi
+$sp $sp 4 
+move
+$t1 $rt 
+divi
+$t0 $t0 10 
+ori
+$t1 $t1 48 
+sll
+$t1 $t1 8 
+ori
+$t1 $t1 16 
+addi
+$sp $sp -2 
+sw
+$t1 0 $sp 
+ble
+$t0 $zero 74 
+j
+42 
+lw
+$t0 0 $sp 
+addi
+$sp $sp 2 
+beq
+$t0 $zero 86 
+svr
+$t0 0 $t2 
+inc
+$t2 
+j
+74 
+lw
+$ra 0 $sp 
+addi
+$sp $sp 2 
+ret
+urn
+addi
+$sp $sp -6 
+li
+$t0 0 
+sw
+$t0 0 $sp 
+sw
+$t0 2 $sp 
+li
+$t0 23456 
+sw
+$t0 4 $sp 
+jal
+16 
+li
+$sc 100 
+sys
+call
+j
+108 
