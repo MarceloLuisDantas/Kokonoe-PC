@@ -8,6 +8,8 @@ import (
 var KEY_WORDS = map[string]bool{
 	"add": true, "addi": true, "sub": true, "subi": true,
 	"mult": true, "multi": true, "div": true, "divi": true,
+	"addu": true, "addui": true, "subu": true, "subui": true,
+	"multu": true, "multui": true, "divu": true, "divui": true,
 	"or": true, "ori": true, "and": true, "andi": true,
 	"slt": true, "slti": true, "sltu": true, "sltui": true,
 	"sll": true, "srl": true,

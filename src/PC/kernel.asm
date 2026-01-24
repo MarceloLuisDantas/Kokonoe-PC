@@ -21,24 +21,64 @@
 # __KOKONOE_MOD(number, mod)
 #               sp+2,   sp
 __KOKONOE_MOD:
-    lw $t0, 0($sp)   # t0 = mod
-    lw $t1, 2($sp)   # t1 = number
+    lw $t0, 0($sp)          # t0 = mod
+    lw $t1, 2($sp)          # t1 = number
 
-    __KOKONOE_LOOP_MOD:
-        # if t1 < t0; { break }
-        blt $t1, $t0, *__KOKONOE_END_LOOP_MOD
+    slt $t2, $t0, $zero     # t2 = mod < 0 (mod negativo)
+    slt $t3, $t1, $zero     # t3 = num < 0 (valor negativo)
 
-        sub $t1, $t1, $t0 # t1 -= t0 
-        j *__KOKONOE_LOOP_MOD
-    __KOKONOE_END_LOOP_MOD:
+    # if (number > 0) { __KOKONOE_MOD_VALUE_POSITIVE } else { __KOKONOE_MOD_VALUE_NEGATIVE }
+    bne $t3, $zero, *__KOKONOE_MOD_VALUE_NEGATIVE
+        __KOKONOE_MOD_VALUE_POSITIVE:
+            # if (mod > 0) { __KOKONOE_MOD_VALUE_POSITIVE_MOD_NEGATIVE } else { __KOKONOE_MOD_VALUE_POSITIVE_MOD_NEGATIVE }
+            bne $t2, $zero, *__KOKONOE_MOD_VALUE_POSITIVE_MOD_NEGATIVE
+                __KOKONOE_MOD_VALUE_POSITIVE_MOD_POSITIVE:
+                    __KOKONOE_MOD_VALUE_POSITIVE_MOD_POSITIVE_LOOP:     
+                        # if t1 < t0; { break } 
+                        blt $t1, $t0, *__KOKONOE_END_MOD
+                        sub $t1, $t1, $t0   # t1 -= t0 
+                        j *__KOKONOE_MOD_VALUE_POSITIVE_MOD_POSITIVE_LOOP
+
+                __KOKONOE_MOD_VALUE_POSITIVE_MOD_NEGATIVE:
+        __KOKONOE_MOD_VALUE_NEGATIVE:
+            # if (mod > 0) { __KOKONOE_MOD_VALUE_NEGATIVE_MOD_POSITIVE } else { __KOKONOE_MOD_VALUE_NEGATIVE_MOD_NEGATIVE }
+            bne $t2, $zero, *__KOKONOE_MOD_VALUE_NEGATIVE_MOD_NEGATIVE
+                __KOKONOE_MOD_VALUE_NEGATIVE_MOD_POSITIVE:
+
+                __KOKONOE_MOD_VALUE_NEGATIVE_MOD_NEGATIVE:
+
+    __KOKONOE_END_MOD:
 
     move $rt, $t1
     return
 
-# VRAM [00000000][0000][0000]
-# [00000000] - ASCII
-# [0000] - CHARACTER COLOR
-# [0000] - BACKGROUND COLOR
+
+# __KOKONOE_MODU(number, mod)
+#               sp+2,   sp
+__KOKONOE_MODU:
+    lw $t0, 0($sp)          # t0 = mod
+    lw $t1, 2($sp)          # t1 = number
+
+    slt $t2, $t0, $zero     # t2 = mod < 0 (mod negativo)
+    # if (mod > 0) { __KOKONOE_MODU_NEGATIVE_LOOP } else { __KOKONOE_MODU_POSITIVE_LOOP }
+    bne $t2, $zero, *__KOKONOE_MODU_NEGATIVE_LOOP
+        __KOKONOE_MODU_POSITIVE_LOOP:     
+            sltu $t2, $t1, $t0 # t2 = t1 < t0
+            bgt $t2, $zero, *__KOKONOE_END_MODU # if ( t2 > 0 ) { __KOKONOE_END_MODU }
+            sub $t1, $t1, $t0  # t1 -= t0 
+            j *__KOKONOE_MODU_POSITIVE_LOOP
+        __KOKONOE_MODU_NEGATIVE_LOOP:
+            sltu $t2, $t1, $t0 # t2 = t1 < t0
+            bgt $t2, $zero, *__KOKONOE_END_MODU # if ( t2 > 0 ) { __KOKONOE_END_MODU }
+            sub $t1, $t1, $t0  # t1 -= t0 
+            j *__KOKONOE_MODU_NEGATIVE_LOOP
+
+
+    __KOKONOE_END_MODU:
+
+    move $rt, $t1
+    return
+
 # __KOKONOE_PRINT_U16(number, column_vram, line_vram)
 #                    sp+4    sp+2         sp
 __KOKONOE_PRINT_U16:
@@ -49,7 +89,7 @@ __KOKONOE_PRINT_U16:
 
     lw $t2, 0($sp)      # t2 = column_vram
     addi $sp, $sp, 2    # pop column_vram
-    add $t2, $t1, $t2   # t2 = line * 60 + column | Index incial na VRAM
+    add $t4, $t1, $t2   # t4 = line * 60 + column | Index incial na VRAM
 
     lw $t0, 0($sp)      # t0 = number
     addi $sp, $sp, 2    # pop number
@@ -59,28 +99,34 @@ __KOKONOE_PRINT_U16:
     # t1 = 0
     # t2 = index na VRAM 
 
-    # push ra
-    addi $sp, $sp, -2
-    sw $ra, 0($sp)
-
     # push 0 (zero indica que todos os valores foram desempilhados no momento de printar)
     addi $sp, $sp, -2
     sw $zero, 0($sp)
 
     # while (t0 != 0)
     __KOKONOE_WHILE_STACK_NUMBERS_U16:
-        # __KOKONOE_MOD(number, mod)
+        # push ra
+        addi $sp, $sp, -2
+        sw $ra, 0($sp)
+        
+        # __KOKONOE_MODU(number, mod)
         #               sp+2,   sp    
         addi $sp, $sp, -4   # cria 2 epaços na stack
         li $t1, 10
         sw $t1, 0($sp)      # push 10 (modulo)
         sw $t0, 2($sp)      # push number    
-        jal *__KOKONOE_MOD
+
+        jal *__KOKONOE_MODU
+
         lw $t0, 2($sp)
         addi $sp, $sp, 4    # pop values
 
+        # pop ra
+        lw $ra, 0($sp)
+        addi $sp, $sp, 2
+
         move $t1, $rt       # t1 = number % 10
-        divi $t0, $t0, 10   # number /= 10
+        divui $t0, $t0, 10  # number /= 10
 
         # Monta o valor para VRAM
         ori $t1, $t1, 48    # t1 or 00110000 = 0011xxxx | valor em ASCII
@@ -104,33 +150,70 @@ __KOKONOE_PRINT_U16:
         # pop
         lw $t0, 0($sp)
         addi $sp, $sp, 2
+
+        # if (t0 == 0) { break }
         beq $t0, $zero, *__KOKONOE_END_UNSTACK_PRINT_NUMBERS
 
-        svr $t0, 0($t2)
-        inc $t2
+        # print
+        svr $t0, 0($t4)
+        inc $t4
 
         j *__KOKONOE_UNSTACK_PRINT_NUMBERS
     __KOKONOE_END_UNSTACK_PRINT_NUMBERS:
 
-    lw $ra, 0($sp)
-    addi $sp, $sp, 2
-
     return
 
-_main:
-    addi $sp, $sp, -6 # Adiciona 3 espaços na stack       
+__KOKONOE_TEST_PRINT_U16:
+    addi $sp, $sp, -2   # adiciona 1 espaço na stack
+    sw $ra, 0($sp)      # push ra
+
+    addi $sp, $sp, -6   # Adiciona 3 espaços na stack       
     
     li $t0, 0
-    sw $t0, 0($sp) # line_vram
-    sw $t0, 2($sp) # column_vram
+    sw $t0, 0($sp)      # line_vram 0
+    sw $t0, 2($sp)      # column_vram 0
 
-    li $t0, 23456
-    sw $t0, 4($sp) # number
-      
+    li $t0, 1
+    sw $t0, 4($sp)      # number
+
     # print_16(number, column_vram, line_vram)
     #          sp+4    sp+2         sp
     jal *__KOKONOE_PRINT_U16
+    
+    li $t0, 1
+    sw $t0, 0($sp)
+    li $t0, 0
+    sw $t0, 2($sp)  
+    li $t0, 32767
+    sw $t0, 4($sp)
+    jal *__KOKONOE_PRINT_U16
 
+    li $t0, 2
+    sw $t0, 0($sp)
+    li $t0, 0
+    sw $t0, 2($sp)
+    li $t0, 32768
+    sw $t0, 4($sp)
+    jal *__KOKONOE_PRINT_U16
+   
+    li $t0, 3
+    sw $t0, 0($sp)
+    li $t0, 0
+    sw $t0, 2($sp)
+    li $t0, 65535
+    sw $t0, 4($sp)
+    jal *__KOKONOE_PRINT_U16
+
+    addi $sp, $sp, 6 # pop values
+ 
+    lw $ra, 0($sp)
+    addi $sp, $sp, 2 # pop ra
+    return
+
+
+_main:
+    jal *__KOKONOE_TEST_PRINT_U16
+    
     li $sc, 100 # render frame
     loop:
         syscall

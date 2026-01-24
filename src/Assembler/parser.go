@@ -10,12 +10,20 @@ const (
 	NOP     string = "nop"
 	ADD     string = "add"
 	ADDI    string = "addi"
+	ADDU    string = "addu"
+	ADDUI   string = "addui"
 	SUB     string = "sub"
 	SUBI    string = "subi"
+	SUBU    string = "subu"
+	SUBUI   string = "subui"
 	MULT    string = "mult"
 	MULTI   string = "multi"
+	MULTU   string = "multu"
+	MULTUI  string = "multui"
 	DIV     string = "div"
 	DIVI    string = "divi"
+	DIVU    string = "divu"
+	DIVUI   string = "divui"
 	OR      string = "or"
 	ORI     string = "ori"
 	AND     string = "and"
@@ -55,11 +63,13 @@ const (
 
 var RegistersInstructions = map[string]bool{
 	ADD: true, SUB: true, MULT: true, DIV: true,
+	ADDU: true, SUBU: true, MULTU: true, DIVU: true,
 	OR: true, AND: true, SLT: true, SLTU: true,
 }
 
 var ImmediateInstructions = map[string]bool{
 	ADDI: true, SUBI: true, MULTI: true, DIVI: true,
+	ADDUI: true, SUBUI: true, MULTUI: true, DIVUI: true,
 	ORI: true, ANDI: true, SLTI: true, SLTUI: true,
 	SLL: true, SRL: true,
 }
