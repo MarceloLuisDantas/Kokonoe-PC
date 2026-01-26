@@ -1,0 +1,294 @@
+186
+j
+114 
+lb
+$t0 0 $t3 
+inc
+$t0 
+sb
+$t0 0 $t3 
+ret
+urn
+lb
+$t0 0 $t3 
+dec
+$t0 
+sb
+$t0 0 $t3 
+ret
+urn
+li
+$t0 2064 
+beq
+$t3 $t0 26 
+inc
+$t3 
+ret
+urn
+li
+$t3 16 
+ret
+urn
+li
+$t0 16 
+beq
+$t3 $t0 38 
+dec
+$t3 
+ret
+urn
+li
+$t3 2064 
+ret
+urn
+li
+$t2 0 
+lb
+$t0 0 $t3 
+bne
+$t0 $zero 72 
+inc
+$t5 
+lrb
+$t0 0 $t5 
+li
+$t1 93 
+bne
+$t0 $t1 64 
+bne
+$t2 $zero 62 
+inc
+$t5 
+ret
+urn
+dec
+$t2 
+li
+$t1 91 
+bne
+$t0 $t1 70 
+inc
+$t2 
+j
+48 
+ret
+urn
+li
+$t2 0 
+lb
+$t0 0 $t3 
+beq
+$t0 $zero 104 
+dec
+$t5 
+lrb
+$t0 0 $t5 
+li
+$t1 91 
+bne
+$t0 $t1 96 
+bne
+$t2 $zero 94 
+inc
+$t5 
+ret
+urn
+dec
+$t2 
+li
+$t1 93 
+bne
+$t0 $t1 102 
+inc
+$t2 
+j
+80 
+ret
+urn
+lb
+$t0 0 $t3 
+li
+$sc 1003 
+sys
+call
+ret
+urn
+li
+$t3 16 
+la
+$t5 0 
+lrb
+$t4 0 $t5 
+beq
+$t4 $zero 182 
+inc
+$t5 
+li
+$t0 43 
+bne
+$t4 $t0 132 
+jal
+2 
+j
+180 
+li
+$t0 45 
+bne
+$t4 $t0 140 
+jal
+10 
+j
+180 
+li
+$t0 60 
+bne
+$t4 $t0 148 
+jal
+30 
+j
+180 
+li
+$t0 62 
+bne
+$t4 $t0 156 
+jal
+18 
+j
+180 
+li
+$t0 91 
+bne
+$t4 $t0 164 
+jal
+42 
+j
+180 
+li
+$t0 93 
+bne
+$t4 $t0 172 
+jal
+74 
+j
+180 
+li
+$t0 46 
+bne
+$t4 $t0 180 
+jal
+106 
+j
+180 
+j
+118 
+li
+$sc 0 
+sys
+call
+43
+43
+43
+43
+43
+43
+43
+43
+91
+62
+43
+43
+43
+43
+91
+62
+43
+43
+62
+43
+43
+43
+62
+43
+43
+43
+62
+43
+60
+60
+60
+60
+45
+93
+62
+43
+62
+43
+62
+45
+62
+62
+43
+91
+60
+93
+60
+45
+93
+62
+62
+46
+62
+45
+45
+45
+46
+43
+43
+43
+43
+43
+43
+43
+46
+46
+43
+43
+43
+46
+62
+62
+46
+60
+45
+46
+60
+46
+43
+43
+43
+46
+45
+45
+45
+45
+45
+45
+46
+45
+45
+45
+45
+45
+45
+45
+45
+46
+62
+62
+43
+46
+62
+43
+43
+46
+0

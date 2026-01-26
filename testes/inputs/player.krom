@@ -1,0 +1,125 @@
+124
+j
+74 
+li
+$t2 3600 
+li
+$t1 0 
+beq
+$t0 $t2 14 
+svr
+$t1 0 $t0 
+inc
+$t0 
+j
+6 
+ret
+urn
+lb
+$t0 17 $zero 
+multi
+$t0 $t0 60 
+lb
+$t1 16 $zero 
+add
+$t0 $t0 $t1 
+li
+$t1 17 
+svr
+$t1 0 $t0 
+ret
+urn
+lb
+$t0 17 $zero 
+ble
+$t0 $zero 38 
+dec
+$t0 
+sb
+$t0 17 $zero 
+ret
+urn
+lb
+$t0 17 $zero 
+li
+$t1 59 
+bge
+$t0 $t1 50 
+inc
+$t0 
+sb
+$t0 17 $zero 
+ret
+urn
+lb
+$t0 16 $zero 
+ble
+$t0 $zero 50 
+dec
+$t0 
+sb
+$t0 16 $zero 
+ret
+urn
+lb
+$t0 16 $zero 
+li
+$t1 59 
+bge
+$t0 $t1 72 
+inc
+$t0 
+sb
+$t0 16 $zero 
+ret
+urn
+li
+$t0 5 
+sb
+$t0 16 $zero 
+li
+$t0 5 
+sb
+$t0 17 $zero 
+lb
+$t0 0 $zero 
+beq
+$t0 $zero 90 
+jal
+30 
+j
+114 
+lb
+$t0 1 $zero 
+beq
+$t0 $zero 98 
+jal
+40 
+j
+114 
+lb
+$t0 2 $zero 
+beq
+$t0 $zero 106 
+jal
+52 
+j
+114 
+lb
+$t0 3 $zero 
+beq
+$t0 $zero 114 
+jal
+62 
+j
+114 
+jal
+2 
+jal
+16 
+li
+$sc 100 
+sys
+call
+j
+82 

@@ -731,6 +731,97 @@ func (cpu *CPU) CarryNextInstruction() {
 	cpu.pc += 2
 }
 
+// REGISTRADORES EM MEMORIA
+// 0x0000 [ KEY UP ]
+// 0x0001 [ KEY DOWN ]
+// 0x0002 [ KEY LEFT ]
+// 0x0003 [ KEY RIGHT ]
+// 0x0004 [ KEY SPACE ]
+// 0x0005 [ KEY ENTER ]
+// 0x0006 [ KEY BACKSPACE ]
+// 0x0007 [ KEY W ]
+// 0x0008 [ KEY A ]
+// 0x0009 [ KEY S ]
+// 0x000A [ KEY D ]
+// 0x000B [ KEY Q ]
+// 0x000C [ KEY E ]
+// 0x000D [ KEY I ]
+// 0x000E [ KEY O ]
+// 0x000F [ KEY P ]
+func (cpu *CPU) ReadInput() {
+	if rl.IsKeyDown(rl.KeyUp) {
+		cpu.ram.ram[0] = 1
+	} else if rl.IsKeyDown(rl.KeyDown) {
+		cpu.ram.ram[1] = 1
+	} else if rl.IsKeyDown(rl.KeyLeft) {
+		cpu.ram.ram[2] = 1
+	} else if rl.IsKeyDown(rl.KeyRight) {
+		cpu.ram.ram[3] = 1
+	} else if rl.IsKeyDown(rl.KeySpace) {
+		cpu.ram.ram[4] = 1
+	} else if rl.IsKeyDown(rl.KeyEnter) {
+		cpu.ram.ram[5] = 1
+	} else if rl.IsKeyDown(rl.KeyBackspace) {
+		cpu.ram.ram[6] = 1
+	} else if rl.IsKeyDown(rl.KeyW) {
+		cpu.ram.ram[7] = 1
+	} else if rl.IsKeyDown(rl.KeyA) {
+		cpu.ram.ram[8] = 1
+	} else if rl.IsKeyDown(rl.KeyS) {
+		cpu.ram.ram[9] = 1
+	} else if rl.IsKeyDown(rl.KeyS) {
+		cpu.ram.ram[10] = 1
+	} else if rl.IsKeyDown(rl.KeyD) {
+		cpu.ram.ram[11] = 1
+	} else if rl.IsKeyDown(rl.KeyQ) {
+		cpu.ram.ram[12] = 1
+	} else if rl.IsKeyDown(rl.KeyE) {
+		cpu.ram.ram[13] = 1
+	} else if rl.IsKeyDown(rl.KeyI) {
+		cpu.ram.ram[14] = 1
+	} else if rl.IsKeyDown(rl.KeyO) {
+		cpu.ram.ram[15] = 1
+	} else if rl.IsKeyDown(rl.KeyP) {
+		cpu.ram.ram[16] = 1
+	}
+
+	if rl.IsKeyReleased(rl.KeyUp) {
+		cpu.ram.ram[0] = 0
+	} else if rl.IsKeyReleased(rl.KeyDown) {
+		cpu.ram.ram[1] = 0
+	} else if rl.IsKeyReleased(rl.KeyLeft) {
+		cpu.ram.ram[2] = 0
+	} else if rl.IsKeyReleased(rl.KeyRight) {
+		cpu.ram.ram[3] = 0
+	} else if rl.IsKeyReleased(rl.KeySpace) {
+		cpu.ram.ram[4] = 0
+	} else if rl.IsKeyReleased(rl.KeyEnter) {
+		cpu.ram.ram[5] = 0
+	} else if rl.IsKeyReleased(rl.KeyBackspace) {
+		cpu.ram.ram[6] = 0
+	} else if rl.IsKeyReleased(rl.KeyW) {
+		cpu.ram.ram[7] = 0
+	} else if rl.IsKeyReleased(rl.KeyA) {
+		cpu.ram.ram[8] = 0
+	} else if rl.IsKeyReleased(rl.KeyS) {
+		cpu.ram.ram[9] = 0
+	} else if rl.IsKeyReleased(rl.KeyS) {
+		cpu.ram.ram[10] = 0
+	} else if rl.IsKeyReleased(rl.KeyD) {
+		cpu.ram.ram[11] = 0
+	} else if rl.IsKeyReleased(rl.KeyQ) {
+		cpu.ram.ram[12] = 0
+	} else if rl.IsKeyReleased(rl.KeyE) {
+		cpu.ram.ram[13] = 0
+	} else if rl.IsKeyReleased(rl.KeyI) {
+		cpu.ram.ram[14] = 0
+	} else if rl.IsKeyReleased(rl.KeyO) {
+		cpu.ram.ram[15] = 0
+	} else if rl.IsKeyReleased(rl.KeyP) {
+		cpu.ram.ram[16] = 0
+	}
+}
+
 func (cpu *CPU) Run() {
 	rl.InitWindow(SCREAM_W*SCALING, SCREAM_H*SCALING, "Teste raylib")
 	defer rl.CloseWindow()
@@ -738,6 +829,8 @@ func (cpu *CPU) Run() {
 	rl.SetTargetFPS(60)
 
 	for !rl.WindowShouldClose() {
+		cpu.ReadInput()
+
 		cpu.CarryNextInstruction()
 		ok := cpu.ExecCurrentInstruction(strings.Split(cpu.ir, " "))
 		if ok != 0 {
