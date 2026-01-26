@@ -1,190 +1,162 @@
-186
+158
 j
-114 
-lb
-$t0 0 $t3 
-inc
+134 
+lw
+$t0 0 $sp 
+lw
+$t2 -1 $sp 
+li
+$t3 10 
+move
+$t1 $t2 
+blt
+$t1 $t3 16 
+subi
+$t1 $t1 10 
+j
+10 
+divui
+$t2 $t2 10 
+ori
+$t1 $t1 48 
+sll
+$t1 $t1 8 
+ori
+$t1 $t1 16 
+svr
+$t1 0 $t0 
+dec
 $t0 
-sb
-$t0 0 $t3 
-ret
-urn
-lb
-$t0 0 $t3 
-dec
-$t0 
-sb
-$t0 0 $t3 
-ret
-urn
-li
-$t0 2064 
 beq
-$t3 $t0 26 
-inc
-$t3 
-ret
-urn
-li
-$t3 16 
-ret
-urn
-li
-$t0 16 
-beq
-$t3 $t0 38 
-dec
-$t3 
-ret
-urn
-li
-$t3 2064 
-ret
-urn
-li
-$t2 0 
-lb
-$t0 0 $t3 
-bne
-$t0 $zero 72 
-inc
-$t5 
-lrb
-$t0 0 $t5 
-li
-$t1 93 
-bne
-$t0 $t1 64 
-bne
-$t2 $zero 62 
-inc
-$t5 
-ret
-urn
-dec
-$t2 
-li
-$t1 91 
-bne
-$t0 $t1 70 
-inc
-$t2 
+$t2 $zero 32 
 j
-48 
+10 
 ret
 urn
 li
-$t2 0 
-lb
-$t0 0 $t3 
+$t0 901 
+li
+$t1 1 
+li
+$t2 6 
+svr
+$t1 0 $t0 
+svr
+$t1 1 $t0 
+svr
+$t1 2 $t0 
+svr
+$t1 3 $t0 
+svr
+$t1 4 $t0 
+svr
+$t1 60 $t0 
+svr
+$t1 64 $t0 
+svr
+$t1 120 $t0 
+svr
+$t1 124 $t0 
+svr
+$t1 180 $t0 
+svr
+$t1 184 $t0 
+svr
+$t1 240 $t0 
+svr
+$t1 241 $t0 
+svr
+$t1 242 $t0 
+svr
+$t1 243 $t0 
+svr
+$t1 244 $t0 
 beq
-$t0 $zero 104 
-dec
-$t5 
-lrb
-$t0 0 $t5 
-li
-$t1 91 
-bne
-$t0 $t1 96 
-bne
-$t2 $zero 94 
-inc
-$t5 
-ret
-urn
+$t2 $zero 80 
 dec
 $t2 
-li
-$t1 93 
-bne
-$t0 $t1 102 
-inc
-$t2 
+addi
+$t0 $t0 6 
 j
-80 
+40 
 ret
 urn
+li
+$t0 1202 
+li
+$t1 16 
+li
+$t2 6 
+addi
+$sp $sp -2 
+sw
+$ra 0 $sp 
+addi
+$sp $sp -6 
+sw
+$t2 0 $sp 
+sw
+$t1 -2 $sp 
+sw
+$t0 -4 $sp 
+addi
+$sp $sp -4 
+sw
+$t0 0 $sp 
 lb
-$t0 0 $t3 
-li
-$sc 1003 
-sys
-call
-ret
-urn
-li
-$t3 16 
-la
-$t5 0 
-lrb
-$t4 0 $t5 
-beq
-$t4 $zero 182 
-inc
-$t5 
-li
-$t0 43 
-bne
-$t4 $t0 132 
+$t0 $t1 $zero 
+sw
+$t0 -2 $sp 
 jal
 2 
+addi
+$sp $sp 4 
+lw
+$t0 0 $sp 
+lw
+$t1 -2 $sp 
+lw
+$t2 -4 $sp 
+addi
+$sp $sp 6 
+inc
+$t1 
+dec
+$t2 
+beq
+$t2 $zero 128 
 j
-180 
+92 
+lw
+$ra 0 $sp 
+addi
+$sp $sp 2 
+ret
+urn
 li
-$t0 45 
-bne
-$t4 $t0 140 
+$t0 123 
+sb
+$t0 16 $zero 
+sb
+$t0 17 $zero 
+sb
+$t0 18 $zero 
+sb
+$t0 19 $zero 
+sb
+$t0 20 $zero 
+sb
+$t0 21 $zero 
 jal
-10 
-j
-180 
-li
-$t0 60 
-bne
-$t4 $t0 148 
+34 
 jal
-30 
-j
-180 
+82 
 li
-$t0 62 
-bne
-$t4 $t0 156 
-jal
-18 
-j
-180 
-li
-$t0 91 
-bne
-$t4 $t0 164 
-jal
-42 
-j
-180 
-li
-$t0 93 
-bne
-$t4 $t0 172 
-jal
-74 
-j
-180 
-li
-$t0 46 
-bne
-$t4 $t0 180 
-jal
-106 
-j
-180 
-j
-118 
-li
-$sc 0 
+$sc 100 
 sys
 call
+j
+148 
 43
 43
 43

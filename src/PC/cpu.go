@@ -843,11 +843,6 @@ func (cpu *CPU) Run() {
 	}
 }
 
-func (cpu *CPU) ShowRom() {
-	for i, v := range cpu.rom.rom {
-		fmt.Printf("%d -> %s\n", i, v)
-		if i == 150 {
-			return
-		}
-	}
+func (cpu *CPU) ShowStack() {
+
 }
