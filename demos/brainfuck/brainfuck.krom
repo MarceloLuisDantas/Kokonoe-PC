@@ -94,11 +94,11 @@ $ra 0 $sp
 addi
 $sp $sp -6 
 sw
-$t2 0 $sp 
+$t0 0 $sp 
 sw
 $t1 -2 $sp 
 sw
-$t0 -4 $sp 
+$t2 -4 $sp 
 addi
 $sp $sp -4 
 sw

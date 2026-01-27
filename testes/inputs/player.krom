@@ -1,18 +1,20 @@
-124
+126
 j
-74 
+76 
 li
 $t2 3600 
 li
 $t1 0 
+li
+$t0 0 
 beq
-$t0 $t2 14 
+$t0 $t2 16 
 svr
 $t1 0 $t0 
 inc
 $t0 
 j
-6 
+8 
 ret
 urn
 lb
@@ -32,7 +34,7 @@ urn
 lb
 $t0 17 $zero 
 ble
-$t0 $zero 38 
+$t0 $zero 40 
 dec
 $t0 
 sb
@@ -44,7 +46,7 @@ $t0 17 $zero
 li
 $t1 59 
 bge
-$t0 $t1 50 
+$t0 $t1 52 
 inc
 $t0 
 sb
@@ -54,7 +56,7 @@ urn
 lb
 $t0 16 $zero 
 ble
-$t0 $zero 50 
+$t0 $zero 52 
 dec
 $t0 
 sb
@@ -66,7 +68,7 @@ $t0 16 $zero
 li
 $t1 59 
 bge
-$t0 $t1 72 
+$t0 $t1 74 
 inc
 $t0 
 sb
@@ -84,42 +86,42 @@ $t0 17 $zero
 lb
 $t0 0 $zero 
 beq
-$t0 $zero 90 
+$t0 $zero 92 
 jal
-30 
+32 
 j
-114 
+116 
 lb
 $t0 1 $zero 
 beq
-$t0 $zero 98 
+$t0 $zero 100 
 jal
-40 
+42 
 j
-114 
+116 
 lb
 $t0 2 $zero 
 beq
-$t0 $zero 106 
+$t0 $zero 108 
 jal
-52 
+54 
 j
-114 
+116 
 lb
 $t0 3 $zero 
 beq
-$t0 $zero 114 
+$t0 $zero 116 
 jal
-62 
+64 
 j
-114 
+116 
 jal
 2 
 jal
-16 
+18 
 li
 $sc 100 
 sys
 call
 j
-82 
+84 

@@ -7,6 +7,7 @@ _clear_scream:
     # 0 = [00000000][0000][0000] tudo preto
     li $t1, 0
 
+    li $t0, 0
     loop_cleaning:
         beq $t0, $t2, *cleaning_end
         svr $t1, 0($t0)
